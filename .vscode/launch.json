@@ -1,0 +1,14 @@
+{
+    "configurations": [
+        {
+            "type": "java",
+            "name": "Spring Boot-SqlDbmsWithUiApplication<sql-dbms-ui>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "com.example.sql_dbms_ui.SqlDbmsWithUiApplication",
+            "projectName": "sql-dbms-ui",
+            "args": "",
+            "envFile": "${workspaceFolder}/.env"
+        }
+    ]
+}

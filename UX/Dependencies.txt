@@ -1,0 +1,14 @@
+Spring Web 
+- Used to Web application building used Spring MVC
+
+Spring Security
+- Implement Secure web application
+
+Thymleleaf
+-Used as frontend for html (to my knowledge of how that works)
+
+MySQLDriver
+- For MySQL
+
+Spring Data JPA
+- To implement MySQL to Spring Data
