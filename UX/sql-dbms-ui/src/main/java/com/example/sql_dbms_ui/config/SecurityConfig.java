@@ -13,7 +13,7 @@ public class SecurityConfig {
         http
             .csrf(csrf -> csrf.disable()) // Disable CSRF for testing purposes
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/", "/Employees", "/save", "/update/**", "/delete/**").permitAll() // Allow public access
+                .requestMatchers("/", "/Employees", "/save", "/update/**", "/delete/**", "/v3/api-docs/**", "/swagger-ui/**").permitAll() // Allow public access
                 .anyRequest().authenticated()
             );
         return http.build();
