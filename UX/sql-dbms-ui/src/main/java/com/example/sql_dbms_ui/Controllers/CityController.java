@@ -9,13 +9,13 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.sql_dbms_ui.Models.City;
 import com.example.sql_dbms_ui.repo.CityRepo;
 
-import io.swagger.v3.oas.annotations.parameters.RequestBody;
 
 @RestController
 @RequestMapping(value = "/City")
@@ -26,6 +26,7 @@ public class CityController {
     private CityRepo cityRepo;
 
     // Creates new city on city Database
+    // Gets a JSON, that JSON is in city variable, cityRepo uses setters create new city.
     @PostMapping (value = "/save")
     public ResponseEntity<String> saveCity(@RequestBody City city){
         cityRepo.save(city);
