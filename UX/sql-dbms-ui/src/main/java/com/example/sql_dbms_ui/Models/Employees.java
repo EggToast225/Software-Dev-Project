@@ -1,12 +1,13 @@
 package com.example.sql_dbms_ui.Models;
 
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-
+import jakarta.persistence.OneToOne;
 
 /*This class is an entity/table called employees
 that is a subclass of EmployeeID that inherits the EmpID primary key mapping
@@ -35,22 +36,28 @@ public class Employees  {
     @Column
     private String lastName;
 
-    @Column (unique = true)
+    @Column
     private String email;
 
-    @Column
-    private long jobTitleID; // This is a long because it's a primary key for EmployeeJobTitle Entity
+    // Access to Address table, Cascade makes it so that when EmpID is assigned, it also assigns it to Address's ID (they share the primary key)
+    @OneToOne (mappedBy = "employee", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Address address;  
 
-    /*
-    I'm taking a break from implementing this because the json query goes through, but you may need to make a repo for EACH entity/table and 
-    then do some mapping that i'm not willing to do right now. Going to focus on html stuff
-
-    ManyToOne // Multiple Employees can have same jobTitleID
-    @JoinColumn(name = "jobTitleID")
-    private EmployeeJobTitle employeeJobTitle; // make a private class that joins to jobTitleID
+    /* JSON format; this is the format used for SQL injections
+    
+    {   
+        "firstname" : "String",
+        "lastName" : "String",
+        "email" : "String",
+        "address" :{
+            "street" : "String",
+            "zipcode" : int
+        }
+    }
+    
     */
 
-    //Methods for getters and setters
+    // getters and setters
     public long getEmpID(){return EmpID;}
     public void setEmpID(long EmpID){this.EmpID = EmpID;}
 
@@ -63,9 +70,12 @@ public class Employees  {
     public String getEmail(){return email;}
     public void setEmail(String email){this.email  = email;}
 
-    public long getJobTitleID(){return jobTitleID;} // return the employJobTitleID
-    public void setJobTitleID(long jobTitleID){this.jobTitleID = jobTitleID;} // set private class as new private class
-
-
-
+    
+    public Address getAddress(){return address;}
+    public void setAddress(Address address){
+        this.address = address;
+        if (address != null){
+        address.setEmployee(this);
+        }
+    }
 }
