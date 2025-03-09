@@ -10,6 +10,7 @@ import jakarta.persistence.OneToOne;
 @Entity
 public class Address {
 
+    // Primary Key
     @Id
     private long EmpID;
 
@@ -20,18 +21,18 @@ public class Address {
     private int zipcode;
 
     
-    @OneToOne
-    @MapsId
-    @JoinColumn(name = "EmpId") // Foreign key
+    @OneToOne                        //One Employee has one address
+    @MapsId                         // Allows a primary key from another table to be used; this mapping is better than using @JoinColumn on the Primary Key (JPA requires all tables to have a primary key)
+    @JoinColumn(name = "EmpId")    // Foreign key that references Employee, names the column EmpId
     private Employees employee;
 
     @OneToOne
     @JoinColumn(name = "stateID")
-    private State state;  // Foreign key
+    private State state;    // Foreign key that references State's primary key, MapsID can be used for one column
 
     @OneToOne
     @JoinColumn(name = "cityID")
-    private City city;
+    private City city;      //Foreign key that references City's primary key
 
     // getters and setters
     public long getEmpID(){return EmpID;}
@@ -48,5 +49,8 @@ public class Address {
 
     public State getState(){return state;}
     public void setState(State state){this.state = state;}
+
+    public City getCity(){return city;}
+    public void setCity(City city){this.city = city;}
     
 }
