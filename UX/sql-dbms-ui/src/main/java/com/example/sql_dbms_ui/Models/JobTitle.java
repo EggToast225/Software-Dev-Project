@@ -20,4 +20,7 @@ public class JobTitle {
     //getters and setters
     public String getjobTitleName(){return jobTitleName;}
     public void setjobTitleName(String jobTitleName){this.jobTitleName = jobTitleName;}
+
+    public EmployeeJobTitle getEmployeeJobTitle() {return employeeJobTitle;}
+    public void setEmployeeJobTitle(EmployeeJobTitle employeeJobTitle) {this.employeeJobTitle = employeeJobTitle;}
 }
