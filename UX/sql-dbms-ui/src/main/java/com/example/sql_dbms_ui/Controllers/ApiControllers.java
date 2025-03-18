@@ -45,7 +45,8 @@ public class ApiControllers {
         Employees updatedEmployee = EmployeeRepo.findById(EmpID).get();
         updatedEmployee.setFirstName(employee.getFirstName());
         updatedEmployee.setLastName(employee.getLastName());
-        updatedEmployee.setJobTitleID(employee.getJobTitleID());
+        //updatedEmployee.setJobTitleID(employee.getJobTitleID());
+
         updatedEmployee.setEmail(employee.getEmail());
 
         EmployeeRepo.save(updatedEmployee);
