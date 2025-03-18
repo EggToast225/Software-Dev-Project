@@ -35,6 +35,10 @@ public class Division {
     @JoinColumn(name = "City")
     private City city;      //Foreign key that references City's primary key
 
+    @OneToOne
+    @JoinColumn(name = "Country")
+    private Country country;
+
     // getters and setters
     public String getName(){return name;}
     public void setName(String name){this.name = name;}
@@ -56,4 +60,7 @@ public class Division {
 
     public City getCity(){return city;}
     public void setCity(City city){this.city = city;}
+
+    public Country getCountry(){return country;}
+    public void setCountry(Country country){this.country = country;}
 }
