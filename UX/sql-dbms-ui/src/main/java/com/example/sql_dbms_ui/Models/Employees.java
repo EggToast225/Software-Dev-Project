@@ -1,13 +1,17 @@
 package com.example.sql_dbms_ui.Models;
 
+import java.util.Date;
 
-import jakarta.persistence.CascadeType;
+//import org.springframework.boot.autoconfigure.amqp.RabbitConnectionDetails.Address;
+import org.springframework.format.annotation.NumberFormat;
+
+//import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.OneToOne;
+//import jakarta.persistence.OneToOne;
 
 /*This class is an entity/table called employees
 that is a subclass of EmployeeID that inherits the EmpID primary key mapping
@@ -38,14 +42,26 @@ public class Employees  {
 
     @Column
     private String email;
+    
+    @Column
+    private Date HireDate;
 
-    // Access to Address table, Cascade makes it so that when EmpID is assigned, it also assigns it to Address's ID (they share the primary key)
+    @Column
+    private float Salary;
+
+    @NumberFormat(pattern = "###-##-####") // Form of a SSN 
+    @Column
+    private int SSN;
+
+    /*
+    Access to Address table, Cascade makes it so that when EmpID is assigned, it also assigns it to Address's ID (they share the primary key)
     @OneToOne (mappedBy = "employee", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Address address;  
+    private Division division;
+    */
 
     /* JSON format; this is the format used for SQL injections
     
-    {   
+    {
         "firstname" : "String",
         "lastName" : "String",
         "email" : "String",
@@ -70,12 +86,22 @@ public class Employees  {
     public String getEmail(){return email;}
     public void setEmail(String email){this.email  = email;}
 
-    
+    /*
+    public Division getDivision(){return division;}
+    public void setDivision(Division division){this.division = division;}
+
     public Address getAddress(){return address;}
     public void setAddress(Address address){
         this.address = address;
         if (address != null){
-        address.setEmployee(this);
-        }
-    }
+        address.setEmployee
+    */
+    public Date getHireDate(){return HireDate;}
+    public void setHireDate(Date HireDate){this.HireDate = HireDate;}
+
+    public float getSalary(){return Salary;}
+    public void setSalary(float Salary){this.Salary = Salary;}
+
+    public int getSSN(){return SSN;}
+    public void setSSN(int SSN){this.SSN = SSN;}
 }
