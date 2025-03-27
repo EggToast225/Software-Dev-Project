@@ -1,37 +1,45 @@
+// EmployeeDivision.java (Updated to match DB schema)
 package com.example.sql_dbms_ui.Models;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.OneToOne;
+import jakarta.persistence.*;
 
 @Entity
-public class EmployeeDivision{
-    @Id
-    @GeneratedValue(strategy=GenerationType.IDENTITY)
-    private long id;
+public class EmployeeDivision {
 
-    private String name;
+    @Id
+    @Column(name = "empid")
+    private int empId;
 
     @OneToOne
-    @JoinColumn(name = "EmpID") //One employeeID per Employee (Foreign Key)
+    @JoinColumn(name = "empid", insertable = false, updatable = false)
     private Employees employee;
 
-    //getter and setters
+    @ManyToOne
+    @JoinColumn(name = "div_ID")
+    private Division division;
 
-    public long getID(){return id;}
-    public void setID(long id){this.id = id;}
-    
-    public String getName(){return name;}
-    public void setName(String name){this.name = name;}
+    // Getters and setters
+    public int getEmpId() {
+        return empId;
+    }
 
-    public Employees getEmployee(){return employee;}
-    public void setEmployee(Employees employee){
+    public void setEmpId(int empId) {
+        this.empId = empId;
+    }
+
+    public Employees getEmployee() {
+        return employee;
+    }
+
+    public void setEmployee(Employees employee) {
         this.employee = employee;
-        /*if (employee != null){
-        employee.setEmployeeDivision(this);
-        }*/
+    }
+
+    public Division getDivision() {
+        return division;
+    }
+
+    public void setDivision(Division division) {
+        this.division = division;
     }
 }

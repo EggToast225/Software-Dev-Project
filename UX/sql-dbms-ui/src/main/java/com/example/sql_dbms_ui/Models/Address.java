@@ -1,33 +1,63 @@
 package com.example.sql_dbms_ui.Models;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.MapsId;
-import jakarta.persistence.OneToOne;
+import jakarta.persistence.*;
 
 @Entity
 public class Address {
+
     @Id
-    private long ID;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private int addressId;
 
-    @Column
-    private String Name;
+    @ManyToOne
+    @JoinColumn(name = "city_id", nullable = false)
+    private City city;
 
-    @OneToOne
-    @MapsId
-    @JoinColumn(name = "EmpID")
-    private Employees employee;
+    @ManyToOne
+    @JoinColumn(name = "state_id", nullable = false)
+    private State state;
 
-    //getters and setters
+    private String street;
+    private String zip;
 
-    public long getID() {return ID;}
-    public void setID(long iD) {ID = iD;}
-    
-    public String getName() {return Name;}
-    public void setName(String name){this.Name = name;}
+    // Getters and setters
+    public int getAddressId() {
+        return addressId;
+    }
 
-    public Employees getEmployee() {return employee;}
-    public void setDivision(Employees employee) {this.employee = employee;}
+    public void setAddressId(int addressId) {
+        this.addressId = addressId;
+    }
+
+    public City getCity() {
+        return city;
+    }
+
+    public void setCity(City city) {
+        this.city = city;
+    }
+
+    public State getState() {
+        return state;
+    }
+
+    public void setState(State state) {
+        this.state = state;
+    }
+
+    public String getStreet() {
+        return street;
+    }
+
+    public void setStreet(String street) {
+        this.street = street;
+    }
+
+    public String getZip() {
+        return zip;
+    }
+
+    public void setZip(String zip) {
+        this.zip = zip;
+    }
 }

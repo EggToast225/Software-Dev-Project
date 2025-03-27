@@ -1,25 +1,45 @@
+// EmployeeJobTitle.java (Updated to match DB schema)
 package com.example.sql_dbms_ui.Models;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.OneToOne;
+import jakarta.persistence.*;
+
 @Entity
 public class EmployeeJobTitle {
+
     @Id
-    @GeneratedValue(strategy=GenerationType.IDENTITY)
-    private long jobTitleID;
+    @Column(name = "empid")
+    private int empId;
 
     @OneToOne
-    @JoinColumn(name = "EmpID") //One employeeID per Employee (Foreign Key)
+    @JoinColumn(name = "empid", insertable = false, updatable = false)
     private Employees employee;
 
-    // getters and setters
-    public long getJobTitleID(){return jobTitleID;}
-    public void setJobTitleID(long jobTitleID){this.jobTitleID = jobTitleID;}
+    @ManyToOne
+    @JoinColumn(name = "job_title_id")
+    private JobTitle jobTitle;
 
-    public Employees getEmployee() {return employee;}
-    public void setEmployee(Employees employee) {this.employee = employee;}
+    // Getters and setters
+    public int getEmpId() {
+        return empId;
+    }
+
+    public void setEmpId(int empId) {
+        this.empId = empId;
+    }
+
+    public Employees getEmployee() {
+        return employee;
+    }
+
+    public void setEmployee(Employees employee) {
+        this.employee = employee;
+    }
+
+    public JobTitle getJobTitle() {
+        return jobTitle;
+    }
+
+    public void setJobTitle(JobTitle jobTitle) {
+        this.jobTitle = jobTitle;
+    }
 }

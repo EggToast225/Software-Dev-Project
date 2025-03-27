@@ -1,26 +1,32 @@
+// JobTitle.java (Updated to match DB schema)
 package com.example.sql_dbms_ui.Models;
 
-
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.OneToOne;
+import jakarta.persistence.*;
 
 @Entity
 public class JobTitle {
-    @Column
-    private String jobTitleName;
 
     @Id
-    @OneToOne // One jobTitleID applies to one Job Title (Foreign key)
-    @JoinColumn(name ="jobTitleID")
-    private EmployeeJobTitle employeeJobTitle;
+    @Column(name = "job_title_id")
+    private int jobTitleId;
 
-    //getters and setters
-    public String getjobTitleName(){return jobTitleName;}
-    public void setjobTitleName(String jobTitleName){this.jobTitleName = jobTitleName;}
+    @Column(name = "job_title")
+    private String title;
 
-    public EmployeeJobTitle getEmployeeJobTitle() {return employeeJobTitle;}
-    public void setEmployeeJobTitle(EmployeeJobTitle employeeJobTitle) {this.employeeJobTitle = employeeJobTitle;}
+    // Getters and setters
+    public int getJobTitleId() {
+        return jobTitleId;
+    }
+
+    public void setJobTitleId(int jobTitleId) {
+        this.jobTitleId = jobTitleId;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
 }

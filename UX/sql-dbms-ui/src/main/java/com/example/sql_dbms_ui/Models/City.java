@@ -1,26 +1,32 @@
 package com.example.sql_dbms_ui.Models;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 
 @Entity
 public class City {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long cityID;
+    @Column(name = "city_id")
+    private int cityId;
 
-    @Column(unique = true)
-    @NotNull
+    @Column(name = "city_name")
     private String cityName;
 
-    //getters and setters
-    public long getCityID(){return cityID;}
-    public void setCityID(long cityID){this.cityID = cityID;}
+    // Getters and setters
+    public int getCityId() {
+        return cityId;
+    }
 
-    public String getCityName(){return cityName;}
-    public void setCityName(String cityName){this.cityName = cityName;}
+    public void setCityId(int cityId) {
+        this.cityId = cityId;
+    }
+
+    public String getCityName() {
+        return cityName;
+    }
+
+    public void setCityName(String cityName) {
+        this.cityName = cityName;
+    }
 }

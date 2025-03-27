@@ -1,97 +1,122 @@
+// Payroll.java (Updated to match DB schema)
 package com.example.sql_dbms_ui.Models;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.MapsId;
-import jakarta.persistence.OneToOne;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import java.util.Date;
-/*
- * Payroll Table
- * Columns:
- * long payID
- * float earnings
- * float fed_tax
- * float fed_med
- * float fed_SS
- * float state_tax
- * float retire_401k
- * float healthcare
- * 
- * Foriegn key:
- * OneToOne
- * Employees employee
- */
+
 @Entity
-@Table(name = "payroll")
 public class Payroll {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long payID;
+    private Long id;
+
+    @Column(name = "pay_date")
+    private Date payDate;
 
     @Column
-    private Date pay_date;
-    
-    @Column
-    private float earnings;
-    
-    @Column
-    private float fed_tax;
+    private Double earnings;
 
     @Column
-    private float fed_med;
+    private Double fed_tax;
 
     @Column
-    private float fed_SS;
+    private Double fed_med;
 
     @Column
-    private float state_tax;
+    private Double fed_SS;
 
     @Column
-    private float retire_401k;
+    private Double state_tax;
 
-    @Column 
-    private float health_care;
+    @Column
+    private Double retire_401k;
 
-    @MapsId
-    @OneToOne
-    @JoinColumn (name = "EmpID")
+    @Column(name = "health_care")
+    private Double healthCare;
+
+    @ManyToOne
+    @JoinColumn(name = "empid")
     private Employees employee;
-    
-    //getters and setters
 
-    public long getPayID() {return payID;}
-    public void setPayID(long payID) {this.payID = payID;}
+    // Getters and setters
+    public Long getId() {
+        return id;
+    }
 
-    public Date getPay_date() {return pay_date;}
-    public void setPay_date(Date pay_date) {this.pay_date = pay_date;}
+    public void setId(Long id) {
+        this.id = id;
+    }
 
-    public float getEarnings() {return earnings;}
-    public void setEarnings(float earnings) {this.earnings = earnings;}
+    public Date getPayDate() {
+        return payDate;
+    }
 
-    public float getFed_tax() {return fed_tax;}
-    public void setFed_tax(float fed_tax) {this.fed_tax = fed_tax;}
+    public void setPayDate(Date payDate) {
+        this.payDate = payDate;
+    }
 
-    public float getFed_med() {return fed_med;}
-    public void setFed_med(float fed_med) {this.fed_med = fed_med;}
+    public Double getEarnings() {
+        return earnings;
+    }
 
-    public float getFed_SS() {return fed_SS;}
-    public void setFed_SS(float fed_SS) {this.fed_SS = fed_SS;}
+    public void setEarnings(Double earnings) {
+        this.earnings = earnings;
+    }
 
-    public float getState_tax() {return state_tax;}
-    public void setState_tax(float state_tax) {this.state_tax = state_tax;}
+    public Double getFed_tax() {
+        return fed_tax;
+    }
 
-    public float getRetire_401k() {return retire_401k;}
-    public void setRetire_401k(float retire_401k) {this.retire_401k = retire_401k;}
+    public void setFed_tax(Double fed_tax) {
+        this.fed_tax = fed_tax;
+    }
 
-    public float getHealth_care() {return health_care;}
-    public void setHealth_care(float health_care) {this.health_care = health_care;}
+    public Double getFed_med() {
+        return fed_med;
+    }
 
-    public Employees getEmployee() {return employee;}
-    public void setEmployee(Employees employee) {this.employee = employee;}
+    public void setFed_med(Double fed_med) {
+        this.fed_med = fed_med;
+    }
+
+    public Double getFed_SS() {
+        return fed_SS;
+    }
+
+    public void setFed_SS(Double fed_SS) {
+        this.fed_SS = fed_SS;
+    }
+
+    public Double getState_tax() {
+        return state_tax;
+    }
+
+    public void setState_tax(Double state_tax) {
+        this.state_tax = state_tax;
+    }
+
+    public Double getRetire_401k() {
+        return retire_401k;
+    }
+
+    public void setRetire_401k(Double retire_401k) {
+        this.retire_401k = retire_401k;
+    }
+
+    public Double getHealthCare() {
+        return healthCare;
+    }
+
+    public void setHealthCare(Double healthCare) {
+        this.healthCare = healthCare;
+    }
+
+    public Employees getEmployee() {
+        return employee;
+    }
+
+    public void setEmployee(Employees employee) {
+        this.employee = employee;
+    }
 }
