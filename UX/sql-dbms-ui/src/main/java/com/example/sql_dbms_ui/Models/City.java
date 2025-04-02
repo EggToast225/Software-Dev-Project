@@ -11,15 +11,21 @@ import jakarta.validation.constraints.NotNull;
 public class City {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long cityID;
+    @Column(name = "city_id")
+    private Long cityId;
 
     @Column(unique = true)
     @NotNull
     private String cityName;
 
-    //getters and setters
-    public long getCityID(){return cityID;}
-    public void setCityID(long cityID){this.cityID = cityID;}
+    // Getters and setters
+    public Long getCityId() {
+        return cityId;
+    }
+
+    public void setCityId(Long cityId) {
+        this.cityId = cityId;
+    }
 
     public String getCityName(){return cityName;}
     public void setCityName(String cityName){this.cityName = cityName;}

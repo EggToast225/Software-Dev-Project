@@ -2,39 +2,14 @@ package com.example.sql_dbms_ui.Models;
 
 import java.util.Date;
 
-//import org.springframework.boot.autoconfigure.amqp.RabbitConnectionDetails.Address;
-import org.springframework.format.annotation.NumberFormat;
-
-//import jakarta.persistence.CascadeType;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-//import jakarta.persistence.OneToOne;
-
-/*This class is an entity/table called employees
-that is a subclass of EmployeeID that inherits the EmpID primary key mapping
-
-columns/attributes:
-
-long EmpID  - Employee ID
-String firstName - Employee's first name
-String lastName - Employee's last name
-String email (unique) - Employee's email
-int jobTitleID - Employee's Job Title ID
-
-Primary Keys:
-EmpID
-*/
-@Entity // specifies this as an entity
-public class Employees  {
+@Entity
+public class Employees {
 
     @Id
-    @GeneratedValue(strategy= GenerationType.IDENTITY) //Sets this as the primary key
-    private long EmpID; // acts as primary key
+    @Column(name = "empid")
+    private Long empid;
 
-    @Column
+    @Column(name = "Fname")
     private String firstName;
 
     @Column
@@ -49,33 +24,33 @@ public class Employees  {
     @Column
     private float Salary;
 
-    @NumberFormat(pattern = "###-##-####") // Form of a SSN 
-    @Column
-    private int SSN;
+    @Column(name = "SSN", unique=true)
+    private String ssn;
 
-    /*
-    Access to Address table, Cascade makes it so that when EmpID is assigned, it also assigns it to Address's ID (they share the primary key)
-    @OneToOne (mappedBy = "employee", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Division division;
-    */
+    @ManyToOne
+    @JoinColumn(name = "address_id")
+    private Address address;
 
-    /* JSON format; this is the format used for SQL injections
-    
-    {
-        "firstname" : "String",
-        "lastName" : "String",
-        "email" : "String",
-        "address" :{
-            "street" : "String",
-            "zipcode" : int
-        }
+    @Column(name = "gender")
+    private String gender;
+
+    @Column(name = "identified_race")
+    private String identifiedRace;
+
+    @Column(name = "DOB")
+    private Date dob;
+
+    @Column(name = "phone")
+    private String phone;
+
+    // Getters and setters
+    public Long getEmpid() {
+        return empid;
     }
-    
-    */
 
-    // getters and setters
-    public long getEmpID(){return EmpID;}
-    public void setEmpID(long EmpID){this.EmpID = EmpID;}
+    public void setEmpid(Long empid) {
+        this.empid = empid;
+    }
 
     public String getFirstName(){ return firstName;}
     public void setFirstName(String firstName){this.firstName = firstName;}

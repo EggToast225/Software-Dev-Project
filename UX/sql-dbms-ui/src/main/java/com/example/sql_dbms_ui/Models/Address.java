@@ -1,16 +1,17 @@
 package com.example.sql_dbms_ui.Models;
 
-import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.MapsId;
-import jakarta.persistence.OneToOne;
+import jakarta.persistence.ManyToOne;
 
 @Entity
 public class Address {
     @Id
-    private long ID;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long addressId;
 
     @Column
     private String Name;
@@ -20,13 +21,30 @@ public class Address {
     @JoinColumn(name = "EmpID")
     private Employees employee;
 
-    //getters and setters
+    // Getters and setters
+    public Long getAddressId() {
+        return addressId;
+    }
 
-    public long getID() {return ID;}
-    public void setID(long iD) {ID = iD;}
-    
-    public String getName() {return Name;}
-    public void setName(String name){this.Name = name;}
+    public void setAddressId(Long addressId) {
+        this.addressId = addressId;
+    }
+
+    public City getCity() {
+        return city;
+    }
+
+    public void setCity(City city) {
+        this.city = city;
+    }
+
+    public State getState() {
+        return state;
+    }
+
+    public void setState(State state) {
+        this.state = state;
+    }
 
     public Employees getEmployee() {return employee;}
     public void setDivision(Employees employee) {this.employee = employee;}

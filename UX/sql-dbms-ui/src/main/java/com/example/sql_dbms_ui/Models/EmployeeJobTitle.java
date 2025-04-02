@@ -9,16 +9,25 @@ import jakarta.persistence.OneToOne;
 @Entity
 public class EmployeeJobTitle {
     @Id
-    @GeneratedValue(strategy=GenerationType.IDENTITY)
-    private long jobTitleID;
+    @Column(name = "empid")
+    private Long empId;
 
     @OneToOne
     @JoinColumn(name = "EmpID") //One employeeID per Employee (Foreign Key)
     private Employees employee;
 
-    // getters and setters
-    public long getJobTitleID(){return jobTitleID;}
-    public void setJobTitleID(long jobTitleID){this.jobTitleID = jobTitleID;}
+    @ManyToOne
+    @JoinColumn(name = "job_title_id")
+    private JobTitle jobTitle;
+
+    // Getters and setters
+    public long getEmpId() {
+        return empId;
+    }
+
+    public void setEmpId(long empId) {
+        this.empId = empId;
+    }
 
     public Employees getEmployee() {return employee;}
     public void setEmployee(Employees employee) {this.employee = employee;}

@@ -9,18 +9,28 @@ import jakarta.persistence.OneToOne;
 
 @Entity
 public class JobTitle {
-    @Column
-    private String jobTitleName;
 
     @Id
-    @OneToOne // One jobTitleID applies to one Job Title (Foreign key)
-    @JoinColumn(name ="jobTitleID")
-    private EmployeeJobTitle employeeJobTitle;
+    @Column(name = "job_title_id")
+    private Long jobTitleId;
 
-    //getters and setters
-    public String getjobTitleName(){return jobTitleName;}
-    public void setjobTitleName(String jobTitleName){this.jobTitleName = jobTitleName;}
+    @Column(name = "job_title")
+    private String title;
 
-    public EmployeeJobTitle getEmployeeJobTitle() {return employeeJobTitle;}
-    public void setEmployeeJobTitle(EmployeeJobTitle employeeJobTitle) {this.employeeJobTitle = employeeJobTitle;}
+    // Getters and setters
+    public long getJobTitleId() {
+        return jobTitleId;
+    }
+
+    public void setJobTitleId(long jobTitleId) {
+        this.jobTitleId = jobTitleId;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
 }

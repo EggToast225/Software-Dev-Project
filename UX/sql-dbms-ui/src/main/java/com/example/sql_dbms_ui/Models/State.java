@@ -10,16 +10,27 @@ import jakarta.persistence.Id;
 public class State { 
 
     @Id
-    @GeneratedValue(strategy=GenerationType.IDENTITY)
-    private long stateID;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "state_id")
+    private Long stateId;
 
     @Column
     private String stateName;
 
-    //getters and setters
-    public long getStateID(){return stateID;}
-    public void setStateID(long stateID){this.stateID = stateID;}
-    
-    public String getStateName(){return stateName;}
-    public void setStateName(String stateName){this.stateName = stateName;}
+    // Getters and setters
+    public Long getStateId() {
+        return stateId;
+    }
+
+    public void setStateId(Long stateId) {
+        this.stateId = stateId;
+    }
+
+    public String getStateName() {
+        return stateName;
+    }
+
+    public void setStateName(String stateName) {
+        this.stateName = stateName;
+    }
 }

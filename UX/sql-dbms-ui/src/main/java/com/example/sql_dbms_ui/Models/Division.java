@@ -11,7 +11,8 @@ import jakarta.persistence.OneToOne;
 public class Division {
     // Primary Key
     @Id
-    private long EmpID;
+    @Column(name = "ID")
+    private Long id;
 
     @Column
     private String name;
@@ -39,9 +40,14 @@ public class Division {
     @JoinColumn(name = "Country")
     private Country country;
 
-    // getters and setters
-    public String getName(){return name;}
-    public void setName(String name){this.name = name;}
+    // Getters and setters
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
 
     public long getEmpID(){return EmpID;}
     public void setEmpID(long EmpID){this.EmpID = EmpID;}

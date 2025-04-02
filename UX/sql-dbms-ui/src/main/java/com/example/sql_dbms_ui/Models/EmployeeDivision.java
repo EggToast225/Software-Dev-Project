@@ -10,22 +10,25 @@ import jakarta.persistence.OneToOne;
 @Entity
 public class EmployeeDivision{
     @Id
-    @GeneratedValue(strategy=GenerationType.IDENTITY)
-    private long id;
-
-    private String name;
+    @Column(name = "empid")
+    private Long empId;
 
     @OneToOne
     @JoinColumn(name = "EmpID") //One employeeID per Employee (Foreign Key)
     private Employees employee;
 
-    //getter and setters
+    @ManyToOne
+    @JoinColumn(name = "div_ID")
+    private Division division;
 
-    public long getID(){return id;}
-    public void setID(long id){this.id = id;}
-    
-    public String getName(){return name;}
-    public void setName(String name){this.name = name;}
+    // Getters and setters
+    public long getEmpId() {
+        return empId;
+    }
+
+    public void setEmpId(long empId) {
+        this.empId = empId;
+    }
 
     public Employees getEmployee(){return employee;}
     public void setEmployee(Employees employee){
