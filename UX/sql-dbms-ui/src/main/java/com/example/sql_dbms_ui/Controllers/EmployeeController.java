@@ -2,57 +2,58 @@ package com.example.sql_dbms_ui.Controllers;
 
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.sql_dbms_ui.Models.Employees;
-import com.example.sql_dbms_ui.repo.EmployeesRepo;
+import com.example.sql_dbms_ui.Services.AdminServices;
 
 
 @RestController
 @RequestMapping(value = "/Employees")
 public class EmployeeController{
 
-    @Autowired // Handles dependency injection
-    private EmployeesRepo employeeRepo;
+    private final AdminServices adminServices;
+
+    EmployeeController(AdminServices adminServices){
+        this.adminServices = adminServices;
+    }
 
 
     //@PostMapping used because we want to save to database; saves new employee
     @PostMapping(value = "/save") 
-    public ResponseEntity<String> saveEmployees(@RequestBody List<Employees> employees) {
-        employeeRepo.saveAll(employees);
+    public ResponseEntity<String> saveEmployee(@RequestBody Employees newEmployee) {
+        adminServices.createUser(newEmployee);
         return ResponseEntity.ok("saved");
     }
 
     //Get all employees
     @GetMapping(value = "/all")
-    public List<Employees> getEmployees(){
-        return employeeRepo.findAll();
+    public List<Employees> getAllEmployees(){
+        return adminServices.getAllEmployees();
     }
 
-    //Updates the User by their primary key/id, handles HTTP Put request
-    @PutMapping(value ="/update/{empid}") 
-    public String updateEmployee(@PathVariable("empid") long EmpID, @RequestBody Employees employee){
-        Employees updatedEmployee = employeeRepo.findById(EmpID).get();
-        updatedEmployee.setFirstName(employee.getFirstName());
-        updatedEmployee.setLastName(employee.getLastName());
-        updatedEmployee.setEmail(employee.getEmail());
+    // Updates the User by their primary key/id, handles HTTP Patch request
+    // Right now, it's just first and last name being updated.
+    @PatchMapping(value ="/update/{empid}") 
+    public String updateEmployee(@PathVariable("empid") long EmpID, @RequestBody Employees employeeUpdates){
+        Employees employee = adminServices.getEmployeeById(EmpID);
+        adminServices.updateEmployee(employee);
 
-        employeeRepo.save(updatedEmployee);
         return "updated";
     }
 
+    //Fix this
     @DeleteMapping(value = "/delete/{id}") // Handles HTTP Delete request
     public String deleteEmployee(@PathVariable("id") long EmpID, @RequestBody Employees employee){
-        Employees deleteUser = employeeRepo.findById(EmpID).get();
+        Employees deleteUser = adminServices.getEmployeeById(EmpID);
         employeeRepo.delete(deleteUser);
         return "deleted user with id: " + EmpID;
     }

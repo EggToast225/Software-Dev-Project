@@ -50,6 +50,25 @@ public class Employees {
     @Column(name = "phone")
     private String phone;
 
+
+
+    // Constructors
+    Employees(){}
+
+    public Employees(String firstName, String lastName, String email, Date hireDate, double salary, String ssn, Address address, String gender, String identifiedRace, Date dob, String phone){
+        this.firstName=firstName;
+        this.lastName=lastName;
+        this.email =  email;
+        this.hireDate = hireDate;
+        this.salary = salary;
+        this.ssn = ssn;
+        this.address = address;
+        this.gender = gender;
+        this.identifiedRace = identifiedRace;
+        this.dob = dob;
+        this.phone = phone;
+    }
+
     // Getters and setters
     public Long getEmpid() {
         return empid;
@@ -99,11 +118,11 @@ public class Employees {
         this.salary = salary;
     }
 
-    public String getSsn() {
+    public String getSSN() {
         return ssn;
     }
 
-    public void setSsn(String ssn) {
+    public void setSSN(String ssn) {
         this.ssn = ssn;
     }
 
