@@ -1,20 +1,24 @@
+// EmployeeDivision.java (Updated to match DB schema)
 package com.example.sql_dbms_ui.Models;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.MapsId;
 import jakarta.persistence.OneToOne;
 
 @Entity
-public class EmployeeDivision{
+public class EmployeeDivision {
+
     @Id
     @Column(name = "empid")
     private Long empId;
 
     @OneToOne
-    @JoinColumn(name = "EmpID") //One employeeID per Employee (Foreign Key)
+    @JoinColumn(name = "empid", insertable = false, updatable = false)
+    @MapsId
     private Employees employee;
 
     @ManyToOne
@@ -22,19 +26,27 @@ public class EmployeeDivision{
     private Division division;
 
     // Getters and setters
-    public long getEmpId() {
+    public Long getEmpId() {
         return empId;
     }
 
-    public void setEmpId(long empId) {
+    public void setEmpId(Long empId) {
         this.empId = empId;
     }
 
-    public Employees getEmployee(){return employee;}
-    public void setEmployee(Employees employee){
+    public Employees getEmployee() {
+        return employee;
+    }
+
+    public void setEmployee(Employees employee) {
         this.employee = employee;
-        /*if (employee != null){
-        employee.setEmployeeDivision(this);
-        }*/
+    }
+
+    public Division getDivision() {
+        return division;
+    }
+
+    public void setDivision(Division division) {
+        this.division = division;
     }
 }

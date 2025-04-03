@@ -7,14 +7,14 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 
 @Entity
-public class State { 
+public class State {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "state_id")
     private Long stateId;
 
-    @Column
+    @Column(name = "state_name")
     private String stateName;
 
     // Getters and setters

@@ -1,44 +1,37 @@
+// Division.java (Updated to match DB schema)
 package com.example.sql_dbms_ui.Models;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.MapsId;
-import jakarta.persistence.OneToOne;
 
 @Entity
 public class Division {
-    // Primary Key
+
     @Id
     @Column(name = "ID")
     private Long id;
 
-    @Column
+    @Column(name = "Name")
     private String name;
 
-    @Column
-    private String street;
+    @Column(name = "city")
+    private String city;
 
-    @Column
-    private int postal_code;
-    
-    @OneToOne                        //One Employee has one address
-    @MapsId                         // Allows a primary key from another table to be used; this mapping is better than using @JoinColumn on the Primary Key (JPA requires all tables to have a primary key)
-    @JoinColumn(name = "EmpId")    // Foreign key that references Employee, names the column EmpId
-    private EmployeeDivision employeeDivision;
+    @Column(name = "addressLine1")
+    private String addressLine1;
 
-    @OneToOne
-    @JoinColumn(name = "State")
-    private State state;    // Foreign key that references State's primary key, MapsID can be used for one column
+    @Column(name = "addressLine2")
+    private String addressLine2;
 
-    @OneToOne
-    @JoinColumn(name = "City")
-    private City city;      //Foreign key that references City's primary key
+    @Column(name = "state")
+    private String state;
 
-    @OneToOne
-    @JoinColumn(name = "Country")
-    private Country country;
+    @Column(name = "country")
+    private String country;
+
+    @Column(name = "postalCode")
+    private String postalCode;
 
     // Getters and setters
     public Long getId() {
@@ -49,24 +42,59 @@ public class Division {
         this.id = id;
     }
 
-    public long getEmpID(){return EmpID;}
-    public void setEmpID(long EmpID){this.EmpID = EmpID;}
+    public String getName() {
+        return name;
+    }
 
-    public EmployeeDivision getEmployee(){return employeeDivision;}
-    public void setEmployee(EmployeeDivision employeeDivision){this.employeeDivision = employeeDivision;}
+    public void setName(String name) {
+        this.name = name;
+    }
 
-    public String getStreet() {return street;}
-    public void setAddress(String street){this.street = street;}
+    public String getCity() {
+        return city;
+    }
 
-    public int getZipCode() {return postal_code;}
-    public void setZipCode(int zipcode){this.postal_code = zipcode;}
+    public void setCity(String city) {
+        this.city = city;
+    }
 
-    public State getState(){return state;}
-    public void setState(State state){this.state = state;}
+    public String getAddressLine1() {
+        return addressLine1;
+    }
 
-    public City getCity(){return city;}
-    public void setCity(City city){this.city = city;}
+    public void setAddressLine1(String addressLine1) {
+        this.addressLine1 = addressLine1;
+    }
 
-    public Country getCountry(){return country;}
-    public void setCountry(Country country){this.country = country;}
+    public String getAddressLine2() {
+        return addressLine2;
+    }
+
+    public void setAddressLine2(String addressLine2) {
+        this.addressLine2 = addressLine2;
+    }
+
+    public String getState() {
+        return state;
+    }
+
+    public void setState(String state) {
+        this.state = state;
+    }
+
+    public String getCountry() {
+        return country;
+    }
+
+    public void setCountry(String country) {
+        this.country = country;
+    }
+
+    public String getPostalCode() {
+        return postalCode;
+    }
+
+    public void setPostalCode(String postalCode) {
+        this.postalCode = postalCode;
+    }
 }

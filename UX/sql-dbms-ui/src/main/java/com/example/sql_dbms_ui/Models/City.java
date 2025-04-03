@@ -5,7 +5,6 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.validation.constraints.NotNull;
 
 @Entity
 public class City {
@@ -14,8 +13,7 @@ public class City {
     @Column(name = "city_id")
     private Long cityId;
 
-    @Column(unique = true)
-    @NotNull
+    @Column(name = "city_name")
     private String cityName;
 
     // Getters and setters
@@ -27,6 +25,11 @@ public class City {
         this.cityId = cityId;
     }
 
-    public String getCityName(){return cityName;}
-    public void setCityName(String cityName){this.cityName = cityName;}
+    public String getCityName() {
+        return cityName;
+    }
+
+    public void setCityName(String cityName) {
+        this.cityName = cityName;
+    }
 }

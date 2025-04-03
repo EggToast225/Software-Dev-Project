@@ -1,11 +1,9 @@
+// JobTitle.java (Updated to match DB schema)
 package com.example.sql_dbms_ui.Models;
-
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.OneToOne;
 
 @Entity
 public class JobTitle {
@@ -18,11 +16,11 @@ public class JobTitle {
     private String title;
 
     // Getters and setters
-    public long getJobTitleId() {
+    public Long getJobTitleId() {
         return jobTitleId;
     }
 
-    public void setJobTitleId(long jobTitleId) {
+    public void setJobTitleId(Long jobTitleId) {
         this.jobTitleId = jobTitleId;
     }
 

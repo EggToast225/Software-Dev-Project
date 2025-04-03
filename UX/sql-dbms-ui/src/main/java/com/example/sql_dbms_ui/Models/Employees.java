@@ -1,6 +1,13 @@
+// Employees.java (Updated to match DB schema)
 package com.example.sql_dbms_ui.Models;
 
 import java.util.Date;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 
 @Entity
 public class Employees {
@@ -12,19 +19,19 @@ public class Employees {
     @Column(name = "Fname")
     private String firstName;
 
-    @Column
+    @Column(name = "Lname")
     private String lastName;
 
-    @Column
+    @Column(name = "email")
     private String email;
-    
-    @Column
-    private Date HireDate;
 
-    @Column
-    private float Salary;
+    @Column(name = "HireDate")
+    private Date hireDate;
 
-    @Column(name = "SSN", unique=true)
+    @Column(name = "Salary")
+    private double salary;
+
+    @Column(name = "SSN")
     private String ssn;
 
     @ManyToOne
@@ -52,31 +59,91 @@ public class Employees {
         this.empid = empid;
     }
 
-    public String getFirstName(){ return firstName;}
-    public void setFirstName(String firstName){this.firstName = firstName;}
+    public String getFirstName() {
+        return firstName;
+    }
 
-    public String getLastName(){return lastName;}
-    public void setLastName(String lastName){this.lastName = lastName;}
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
+    }
 
-    public String getEmail(){return email;}
-    public void setEmail(String email){this.email  = email;}
+    public String getLastName() {
+        return lastName;
+    }
 
-    /*
-    public Division getDivision(){return division;}
-    public void setDivision(Division division){this.division = division;}
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
+    }
 
-    public Address getAddress(){return address;}
-    public void setAddress(Address address){
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public Date getHireDate() {
+        return hireDate;
+    }
+
+    public void setHireDate(Date hireDate) {
+        this.hireDate = hireDate;
+    }
+
+    public double getSalary() {
+        return salary;
+    }
+
+    public void setSalary(double salary) {
+        this.salary = salary;
+    }
+
+    public String getSsn() {
+        return ssn;
+    }
+
+    public void setSsn(String ssn) {
+        this.ssn = ssn;
+    }
+
+    public Address getAddress() {
+        return address;
+    }
+
+    public void setAddress(Address address) {
         this.address = address;
-        if (address != null){
-        address.setEmployee
-    */
-    public Date getHireDate(){return HireDate;}
-    public void setHireDate(Date HireDate){this.HireDate = HireDate;}
+    }
 
-    public float getSalary(){return Salary;}
-    public void setSalary(float Salary){this.Salary = Salary;}
+    public String getGender() {
+        return gender;
+    }
 
-    public int getSSN(){return SSN;}
-    public void setSSN(int SSN){this.SSN = SSN;}
+    public void setGender(String gender) {
+        this.gender = gender;
+    }
+
+    public String getIdentifiedRace() {
+        return identifiedRace;
+    }
+
+    public void setIdentifiedRace(String identifiedRace) {
+        this.identifiedRace = identifiedRace;
+    }
+
+    public Date getDob() {
+        return dob;
+    }
+
+    public void setDob(Date dob) {
+        this.dob = dob;
+    }
+
+    public String getPhone() {
+        return phone;
+    }
+
+    public void setPhone(String phone) {
+        this.phone = phone;
+    }
 }

@@ -9,17 +9,21 @@ import jakarta.persistence.ManyToOne;
 
 @Entity
 public class Address {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long addressId;
 
-    @Column
-    private String Name;
+    @ManyToOne
+    @JoinColumn(name = "city_id", nullable = false)
+    private City city;
 
-    @OneToOne
-    @MapsId
-    @JoinColumn(name = "EmpID")
-    private Employees employee;
+    @ManyToOne
+    @JoinColumn(name = "state_id", nullable = false)
+    private State state;
+
+    private String street;
+    private String zip;
 
     // Getters and setters
     public Long getAddressId() {
@@ -46,6 +50,19 @@ public class Address {
         this.state = state;
     }
 
-    public Employees getEmployee() {return employee;}
-    public void setDivision(Employees employee) {this.employee = employee;}
+    public String getStreet() {
+        return street;
+    }
+
+    public void setStreet(String street) {
+        this.street = street;
+    }
+
+    public String getZip() {
+        return zip;
+    }
+
+    public void setZip(String zip) {
+        this.zip = zip;
+    }
 }
