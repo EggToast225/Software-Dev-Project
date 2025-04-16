@@ -2,12 +2,9 @@ package com.example.sql_dbms_ui.Services;
 
 import java.util.Date;
 import java.util.List;
-import java.lang.reflect.Method;
 import java.util.Optional;
 
 import org.springframework.stereotype.Service;
-
-
 
 import com.example.sql_dbms_ui.Models.Employees;
 import com.example.sql_dbms_ui.repo.EmployeesRepo;
@@ -25,7 +22,7 @@ public class AdminServices {
         this.employeesRepo = employeesRepo;
     }
 
-    // Create new user
+    // Create new user then stores it in database
     public void createUser(Employees newEmployee){
         Employees employee = new Employees(
             newEmployee.getFirstName(),
@@ -49,25 +46,26 @@ public class AdminServices {
 
     
     public void updateEmployee(Employees employee){
-        /*
-            takes in a json request, should only update the fields on that JSON
+        // Find the existing options of employee
+        Optional<Employees> existOpt = employeesRepo.findById(employee.getEmpid());
 
-            Example
-            Database for Employee contains
-        {
-            "id": 1,
-            "firstName": "John",
-            "lastName": "Doe"
-            }
-        Input is {"firstName": "joe"}
-        expected output
-        {
-            "id": 1,
-            "firstName": "joe",
-            "lastName": "Doe"
+        if (existOpt.isPresent()){
+            Employees existing = existOpt.get();
+
+            existing.setFirstName(employee.getFirstName());
+            existing.setLastName(employee.getLastName());
+            existing.setEmail(employee.getEmail());
+            existing.setHireDate(employee.getHireDate());
+            existing.setSalary(employee.getSalary());
+            existing.setSSN(employee.getSSN());
+            existing.setAddress(employee.getAddress());
+            existing.setGender(employee.getGender());
+            existing.setIdentifiedRace(employee.getIdentifiedRace());
+            existing.setDob(employee.getDob());
+            existing.setPhone(employee.getPhone());
         }
-        Should update the any field with a new value
-        */
+
+
         employeesRepo.save(employee);
     }
 

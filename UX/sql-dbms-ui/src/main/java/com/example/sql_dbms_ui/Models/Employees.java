@@ -52,8 +52,8 @@ public class Employees {
 
 
 
-    // Constructors
-    Employees(){}
+    // Constructor for object
+    public Employees(){}
 
     public Employees(String firstName, String lastName, String email, Date hireDate, double salary, String ssn, Address address, String gender, String identifiedRace, Date dob, String phone){
         this.firstName=firstName;
