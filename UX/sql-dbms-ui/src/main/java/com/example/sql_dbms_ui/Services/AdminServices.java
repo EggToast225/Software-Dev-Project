@@ -44,6 +44,10 @@ public class AdminServices {
         return employeesRepo.findAll();
     }
 
+    public void delete(Employees employee){
+        employeesRepo.delete(employee);
+    }
+
     
     public void updateEmployee(Employees employee){
         // Find the existing options of employee
@@ -77,11 +81,11 @@ public class AdminServices {
     }
 
     public Employees getEmployeeBySSN(String ssn){
-        return employeesRepo.findBySSN(ssn).orElseThrow(() -> new EntityNotFoundException("Employee not found with SSN:" + ssn));
+        return employeesRepo.findBySsn(ssn).orElseThrow(() -> new EntityNotFoundException("Employee not found with SSN:" + ssn));
     }
     
     public Employees getEmployeeByDOB(Date dob){
-        return employeesRepo.findByDOB(dob).orElseThrow(()-> new EntityNotFoundException("Employees not found with Date of Birth:" + dob));
+        return employeesRepo.findByDob(dob).orElseThrow(()-> new EntityNotFoundException("Employees not found with Date of Birth:" + dob));
     }
 
     public Employees getEmployeesByFirstName(String firstName){

@@ -54,7 +54,7 @@ public class EmployeeController{
     @DeleteMapping(value = "/delete/{id}") // Handles HTTP Delete request
     public String deleteEmployee(@PathVariable("id") long EmpID, @RequestBody Employees employee){
         Employees deleteUser = adminServices.getEmployeeById(EmpID);
-        employeeRepo.delete(deleteUser);
+        adminServices.delete(deleteUser);
         return "deleted user with id: " + EmpID;
     }
 }

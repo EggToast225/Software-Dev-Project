@@ -1,27 +1,27 @@
-package com.example.sql_dbms_ui;
 
-import com.example.sql_dbms_ui.Models.Employees;
+
+import com.example.sql_dbms_ui.Services.EmployeeServices;
+import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.*;
+
 
 import java.util.Optional;
 import java.util.Date;
-
-import org.junit.jupiter.api.BeforeEach;
 
 import com.example.sql_dbms_ui.Models.Employees;
 import com.example.sql_dbms_ui.repo.EmployeesRepo;
 import com.example.sql_dbms_ui.repo.PayrollRepo;
 
 import jakarta.persistence.EntityNotFoundException;
-
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-
-
+import org.mockito.MockitoAnnotations;
 
 public class EmployeeServicesTest {
 
-    @MockitoAnnotations
+    @Mock
     private EmployeesRepo employeesRepo;
 
     @Mock
@@ -49,12 +49,15 @@ public class EmployeeServicesTest {
 
         // Act
         Employees found = employeeServices.getEmployeeById(1L);
+        System.out.println("Employee retrieved: " + found.getFirstName() + " " + found.getLastName());
 
         // Assert
         assertNotNull(found);
         assertEquals("John", found.getFirstName());
         assertEquals("Doe", found.getLastName());
         verify(employeesRepo, times(1)).findById(1L);
+
+        
     }
 
     @Test

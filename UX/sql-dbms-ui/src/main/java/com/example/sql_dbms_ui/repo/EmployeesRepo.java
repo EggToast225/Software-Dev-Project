@@ -14,8 +14,8 @@ import com.example.sql_dbms_ui.Models.Employees;
 public interface EmployeesRepo extends JpaRepository<Employees, Long>{
 
     // Custom Queries
-    Optional<Employees> findBySSN(String ssn);
-    Optional<Employees> findByDOB(Date dob);
+    Optional<Employees> findBySsn(String ssn);
+    Optional<Employees> findByDob(Date dob);
 
     Optional<Employees> findByFirstName(String firstName);
     Optional<Employees> findByLastName(String lastName);
