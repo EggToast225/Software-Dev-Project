@@ -44,8 +44,9 @@ public class AdminServices {
         return employeesRepo.findAll();
     }
 
-    public void delete(Employees employee){
-        employeesRepo.delete(employee);
+    public void delete(Long EmpID){
+        Employees delEmp = employeesRepo.findById(EmpID).orElseThrow(()-> new EntityNotFoundException("Employee not found with EmpID " + EmpID));
+        employeesRepo.delete(delEmp);
     }
 
     
@@ -98,7 +99,7 @@ public class AdminServices {
     
 
     public void updateEmployeeSalary(Long id ,double newSalary){
-        Employees employee = employeesRepo.findById(id).orElseThrow(() -> new EntityNotFoundException("Employee not found with EmpId" + id));
+        Employees employee = employeesRepo.findById(id).orElseThrow(() -> new EntityNotFoundException("Employee not found with EmpId " + id));
         employee.setSalary(newSalary);
         employeesRepo.save(employee);
     }
