@@ -1,9 +1,10 @@
 package com.example.sql_dbms_ui.Services;
 
-import java.util.Date;
+import java.sql.Date;
 import java.util.List;
-import java.util.Optional;
 
+import org.springframework.data.domain.Example;
+import org.springframework.data.domain.ExampleMatcher;
 import org.springframework.stereotype.Service;
 
 import com.example.sql_dbms_ui.Models.Employees;
@@ -13,9 +14,11 @@ import jakarta.persistence.EntityNotFoundException;
 
 // Business Logic for Admin side
 
+
+
 @Service
 public class AdminServices {
-    
+
     private final EmployeesRepo employeesRepo;
 
     public AdminServices(EmployeesRepo employeesRepo){
@@ -30,7 +33,7 @@ public class AdminServices {
             newEmployee.getEmail(),
             newEmployee.getHireDate(),
             newEmployee.getSalary(),
-            newEmployee.getSSN(),
+            newEmployee.getSsn(),
             newEmployee.getAddress(),
             newEmployee.getGender(),
             newEmployee.getIdentifiedRace(),
@@ -50,32 +53,54 @@ public class AdminServices {
     }
 
     
-    public void updateEmployee(Employees employee){
-        // Find the existing options of employee
-        Optional<Employees> existOpt = employeesRepo.findById(employee.getEmpid());
+    public Employees updateEmployee(Long id,Employees employee){
+        // Find the existing employee, otherwise throw error
+        Employees existing = employeesRepo.findById(id).orElseThrow(()-> new RuntimeException("Employee not found"));
 
-        if (existOpt.isPresent()){
-            Employees existing = existOpt.get();
-
-            existing.setFirstName(employee.getFirstName());
-            existing.setLastName(employee.getLastName());
-            existing.setEmail(employee.getEmail());
-            existing.setHireDate(employee.getHireDate());
-            existing.setSalary(employee.getSalary());
-            existing.setSSN(employee.getSSN());
-            existing.setAddress(employee.getAddress());
-            existing.setGender(employee.getGender());
-            existing.setIdentifiedRace(employee.getIdentifiedRace());
-            existing.setDob(employee.getDob());
-            existing.setPhone(employee.getPhone());
+        existing.setFirstName(employee.getFirstName());
+        existing.setLastName(employee.getLastName());
+        existing.setEmail(employee.getEmail());
+        existing.setHireDate(employee.getHireDate());
+        existing.setSalary(employee.getSalary());
+        existing.setSsn(employee.getSsn());
+        existing.setAddress(employee.getAddress());
+        existing.setGender(employee.getGender());
+        existing.setIdentifiedRace(employee.getIdentifiedRace());
+        existing.setDob(employee.getDob());
+        existing.setPhone(employee.getPhone());
+        
+        return employeesRepo.save(existing);
         }
-
-
-        employeesRepo.save(employee);
-    }
 
     //Search for an employee using name, DOB, SSN, empid to show their information for editing
     //(Admin only)
+
+
+    // Setting Custom Queries with JPA's Example matcher
+    private static final ExampleMatcher SEARCH_CONDITION_MATCH_ANY = ExampleMatcher
+        .matchingAll()
+        .withIgnoreCase()
+        .withIgnoreNullValues()
+        .withStringMatcher(ExampleMatcher.StringMatcher.CONTAINING);
+    /*
+    Basically this is saying that the ExampleMatcher matches with anything containing to the string equivalent of the values given
+    Works by providing a employee class and then getting an Example<Employees> with those matching values
+    .withIgnoreNullValues is included so that it null Values don't count towards matching
+    
+        */
+    
+    public List<Employees> searchEmployees(String firstName, String lastName, String ssn, Long empid) {
+        Employees searchFields = new Employees();
+        searchFields.setFirstName(firstName);
+        searchFields.setLastName(lastName);
+        searchFields.setSsn(ssn);
+        searchFields.setEmpid(empid);
+        
+        Example<Employees> searchResult = Example.of(searchFields, SEARCH_CONDITION_MATCH_ANY);
+        return employeesRepo.findAll(searchResult);
+    }
+
+    
 
     public Employees getEmployeeById(long id){
         return employeesRepo.findById(id).orElseThrow(() -> new EntityNotFoundException("Employee not found with EmpId" + id));
