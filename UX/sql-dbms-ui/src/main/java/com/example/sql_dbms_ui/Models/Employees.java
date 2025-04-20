@@ -121,11 +121,11 @@ public class Employees {
         this.salary = salary;
     }
 
-    public String getSSN() {
+    public String getSsn() {
         return ssn;
     }
 
-    public void setSSN(String ssn) {
+    public void setSsn(String ssn) {
         this.ssn = ssn;
     }
 

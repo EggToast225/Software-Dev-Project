@@ -62,7 +62,7 @@ public class AdminServicesTest {
         testEmployee.setLastName("Doe");
         testEmployee.setEmail("john.doe@example.com");
         testEmployee.setSalary(50000);
-        testEmployee.setSSN("123-45-6789");
+        testEmployee.setSsn("123-45-6789");
         testEmployee.setAddress(testAddress);
         testEmployee.setGender("Male");
         testEmployee.setIdentifiedRace("Other");

@@ -26,11 +26,18 @@ public class EmployeeServices {
     // placeholder for later security implementation (should be checking on employee's authorization)
 
     public Employees getEmployeeById(long id){
-        return employeesRepo.findById(id).orElseThrow(() -> new EntityNotFoundException("Employee not found with EmpId" + id));
+        return employeesRepo.findById(id)
+        .orElseThrow(() -> new EntityNotFoundException("Employee not found with EmpId " + id));
     }
 
     // getPayroll
     public Payroll getPayrollById(long id){
-        return payrollRepo.findById(id).orElseThrow(() -> new EntityNotFoundException("Employee's payroll not found with Id" + id));
+        return payrollRepo.findById(id)
+        .orElseThrow(() -> new EntityNotFoundException("Employee's payroll not found with Id " + id));
+    }
+
+    public Employees getEmployeeByEmail(String email){
+        return employeesRepo.findByEmail(email)
+        .orElseThrow(()-> new EntityNotFoundException("Employee with email "+ email + " not found."));
     }
 }

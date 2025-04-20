@@ -25,7 +25,7 @@ public class ApiControllers {
 
     @GetMapping(value = "/")
     public String getPage() {
-        return "Welcome";
+        return "Welcome, if you are seeing this, it means the backend is working";
     }
 
     @GetMapping(value = "/Employees")
