@@ -65,4 +65,22 @@ public class AdminController{
     ) {
         return adminServices.searchEmployees(firstName, lastName, ssn, empid);
     }
+
+    @PatchMapping("/salary-adjustment")
+    public ResponseEntity<?> adjustSalaries(
+        @RequestParam double percentage,
+        @RequestParam double minSalary,
+        @RequestParam double maxSalary) {
+
+        List<Employee> employees = employeeRepository.findBySalaryBetween(minSalary, maxSalary);
+
+        for (Employee e : employees) {
+            double updatedSalary = e.getSalary() * (1 + (percentage / 100));
+            e.setSalary(updatedSalary);
+        }
+
+        employeeRepository.saveAll(employees);
+
+        return ResponseEntity.ok("Salaries updated for " + employees.size() + " employees.");
+    }
 }
