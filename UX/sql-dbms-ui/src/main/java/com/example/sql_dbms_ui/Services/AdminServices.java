@@ -1,11 +1,12 @@
 package com.example.sql_dbms_ui.Services;
 
-import java.sql.Date;
 import java.util.List;
 
 import org.springframework.data.domain.Example;
 import org.springframework.data.domain.ExampleMatcher;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import com.example.sql_dbms_ui.Models.Employees;
 import com.example.sql_dbms_ui.repo.EmployeesRepo;
@@ -42,6 +43,8 @@ public class AdminServices {
             );
         employeesRepo.save(employee);
     };
+
+
     // Get all Employees
     public List<Employees> getAllEmployees(){
         return employeesRepo.findAll();
@@ -101,7 +104,8 @@ public class AdminServices {
     }
 
     
-
+    /*
+    These functions are no longer needed after implementing the above function. 
     public Employees getEmployeeById(long id){
         return employeesRepo.findById(id).orElseThrow(() -> new EntityNotFoundException("Employee not found with EmpId" + id));
     }
@@ -121,11 +125,22 @@ public class AdminServices {
     public Employees getEmployeesByLastName(String lastName){
         return employeesRepo.findByLastName(lastName).orElseThrow(()-> new EntityNotFoundException("Employee not found with last name" + lastName));
     }
+        */
     
+    // Takes a range from min to max salary range, finds the employees in that range and increase their salary by percent
+    public void updateEmployeesSalary(double incPercent, double minSalary , double maxSalary){
+        ResponseEntity<?> adjustSalaries(
+        @RequestParam double percentage,
+        @RequestParam double minSalary,
+        @RequestParam double maxSalary) {
 
-    public void updateEmployeeSalary(Long id ,double newSalary){
-        Employees employee = employeesRepo.findById(id).orElseThrow(() -> new EntityNotFoundException("Employee not found with EmpId " + id));
-        employee.setSalary(newSalary);
-        employeesRepo.save(employee);
+        List<Employee> employees = employeeRepository.findBySalaryBetween(minSalary, maxSalary);
+
+        for (Employee e : employees) {
+            double updatedSalary = e.getSalary() * (1 + (percentage / 100));
+            e.setSalary(updatedSalary);
+        }
+
+        employeeRepository.saveAll(employees);
     }
 }
