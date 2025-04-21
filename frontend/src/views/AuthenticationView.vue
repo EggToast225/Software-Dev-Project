@@ -1,38 +1,56 @@
-<!-- AuthenticationView.vue -->
 <template>
-    <div>
-        <h2> Login </h2>
-      <input v-model="login.username" placeholder="Username" />
-      <input type="password" v-model="login.password" placeholder="Password" />
-      <button @click="handleLogin">Login</button>
-      <p v-if="error">{{ error }}</p>
-    </div>
-  </template>
-  
-  <script setup>
-  import { ref } from 'vue'
-  import axios from 'axios'
-  import { useRouter } from 'vue-router'
-  
-  const router = useRouter() 
-  const login = ref({ username: '', password: '' })
-  const error = ref('')
-  
-  const handleLogin = async () => {
-    try {
-      const res = await axios.post('/api/auth/login', login.value)
-      const role = res.data.role
-  
-      if (role === 'admin') {
-        router.push('/admin')
-      } else if (role === 'employee') {
-        localStorage.setItem('employeeId', res.data.empid)
-        router.push('/employee')
-      } else {
-        error.value = 'Unknown role'
-      }
-    } catch (err) {
-      error.value = 'Invalid credentials'
-    }
+  <div class="login">
+    <h2>Login</h2>
+    <form @submit.prevent="handleLogin">
+      <input v-model="username" placeholder="Username" required />
+      <input v-model="password" type="password" placeholder="Password" required />
+      <button type="submit">Login</button>
+    </form>
+    <p v-if="errorMessage" style="color: red;">{{ errorMessage }}</p>
+  </div>
+</template>
+
+<script setup>
+import { ref } from 'vue'
+import { useRouter } from 'vue-router'
+import axios from 'axios'
+
+const username = ref('')
+const password = ref('')
+const errorMessage = ref('')
+const router = useRouter()
+
+// Configure to have axios send credentials every request
+axios.defaults.withCredentials = true
+
+const handleLogin = async () => {
+  try {
+    const response = await axios.post("api/auth/login", {
+      username: username.value,
+      password: password.value,
+    }).then(response => {
+      const role = response.data.role
+
+      localStorage.setItem('role', role)
+
+      
+      if (role === 'ADMIN') {router.push('/admin')}
+      else if (role === 'EMPLOYEE') {router.push('/employee')}
+    })
+  } catch (err) {
+    errorMessage.value = err.response?.data || 'Login failed'
   }
-  </script>
+}
+</script>
+
+<style>
+input {
+  margin: 0.5rem;
+  padding: 0.5rem;
+}
+button {
+  margin: 0.5rem;
+  padding: 0.5rem 1rem;
+  font-weight: bold;
+}
+</style>

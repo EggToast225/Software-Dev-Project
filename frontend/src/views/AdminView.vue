@@ -149,6 +149,13 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import axios from 'axios'
+import { useRouter } from 'vue-router'
+
+const router = useRouter()
+
+const authAxios = axios.create({withCredentials: true})
+
+axios.defaults.withCredentials = true
 
 // Employee form
 const form = ref({
@@ -178,7 +185,7 @@ const search = ref({
 // Fetch all employees
 const fetchEmployees = async () => {
   try {
-    const res = await axios.get('/api/admin')
+    const res = await authAxios.get('/api/admin')
     employees.value = res.data
   } catch (err) {
     console.error('Fetch error:', err)
@@ -188,8 +195,10 @@ const fetchEmployees = async () => {
 // Add new employee
 const addEmployee = async () => {
   try {
-    await axios.post('/api/admin', form.value)
+    await authAxios.post('/api/admin', form.value)
     await fetchEmployees()
+    
+    // Clears form
     form.value = {
       firstName: '',
       lastName: '',
@@ -249,7 +258,6 @@ const clearSearch = () => {
   showSearchResults.value = false
 }
 
-
 // Editing Employees
 const editingEmployee = ref(null)
 
@@ -272,7 +280,18 @@ const submitEdit = async () => {
     console.error('Update failed:', err)
   }
 }
-onMounted(fetchEmployees)
+onMounted(() => {
+  axios.get('api/auth/verify')
+  .then(()=> {
+    const role = localStorage.getItem('role')
+    if (!role || role!== 'ADMIN'){
+      router.push('/')
+      return
+    }
+  })
+  // Fetch employees when the page loads
+  fetchEmployees()
+})
 </script>
 
 <style scoped>
