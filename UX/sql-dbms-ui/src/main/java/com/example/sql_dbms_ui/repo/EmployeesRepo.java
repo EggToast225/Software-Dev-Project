@@ -12,12 +12,24 @@ import com.example.sql_dbms_ui.Models.Employees;
 
 public interface EmployeesRepo extends JpaRepository<Employees, Long>{
     
-    
+    // Custom Queries
+    /*  There a cool thing that JPA does that makes this work.
+        findBySalaryBetween(double min, double max) will look for keywords in the method
+        so something like 'findBy' will do SELECT
+        'Salary' will refer to e.salary
+        'Between' will do a range within the given parameters
+
+        So the equivalent query that this does is
+
+        SELECT Employees e
+        WHERE e.salary BETWEEN min AND max
+    */
     List<Employees> findBySalaryBetween(double min, double max);
+    
+    
+    /*
+    No longer needed Queries after implementing Example matcher
 
-
-
-    /* 
     // Custom Queries
     Optional<Employees> findBySsn(String ssn);
     Optional<Employees> findByDob(Date dob);

@@ -21,10 +21,12 @@ public class EmployeeServices {
         this.payrollRepo = payrollRepo;
     }
     
-    // b. A general employee able to see their data (SELECT) only, no changi
-    // Search by employee to view their data. (Will require MySQL security...)
-    // placeholder for later security implementation (should be checking on employee's authorization)
+    /*
+        b. A general employee able to see their data (SELECT) only
+        This will probably be done with using the employee's email or id.
+        An email would work better with authentication
 
+    */
     public Employees getEmployeeById(long id){
         return employeesRepo.findById(id)
         .orElseThrow(() -> new EntityNotFoundException("Employee not found with EmpId " + id));
@@ -36,8 +38,10 @@ public class EmployeeServices {
         .orElseThrow(() -> new EntityNotFoundException("Employee's payroll not found with Id " + id));
     }
 
+    /* 
     public Employees getEmployeeByEmail(String email){
         return employeesRepo.findByEmail(email)
         .orElseThrow(()-> new EntityNotFoundException("Employee with email "+ email + " not found."));
     }
+        */
 }

@@ -4,18 +4,14 @@ import java.util.List;
 
 import org.springframework.data.domain.Example;
 import org.springframework.data.domain.ExampleMatcher;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestParam;
 
 import com.example.sql_dbms_ui.Models.Employees;
 import com.example.sql_dbms_ui.repo.EmployeesRepo;
 
 import jakarta.persistence.EntityNotFoundException;
 
-// Business Logic for Admin side
-
-
+// Business Logic for Admin side, part of service layer
 
 @Service
 public class AdminServices {
@@ -44,18 +40,18 @@ public class AdminServices {
         employeesRepo.save(employee);
     };
 
-
     // Get all Employees
     public List<Employees> getAllEmployees(){
         return employeesRepo.findAll();
     }
 
+    // Delete Employee by ID
     public void delete(Long EmpID){
         Employees delEmp = employeesRepo.findById(EmpID).orElseThrow(()-> new EntityNotFoundException("Employee not found with EmpID " + EmpID));
         employeesRepo.delete(delEmp);
     }
 
-    
+    // Update Employees
     public Employees updateEmployee(Long id,Employees employee){
         // Find the existing employee, otherwise throw error
         Employees existing = employeesRepo.findById(id).orElseThrow(()-> new RuntimeException("Employee not found"));
@@ -73,25 +69,10 @@ public class AdminServices {
         existing.setPhone(employee.getPhone());
         
         return employeesRepo.save(existing);
-        }
+    }
 
     //Search for an employee using name, DOB, SSN, empid to show their information for editing
     //(Admin only)
-
-
-    // Setting Custom Queries with JPA's Example matcher
-    private static final ExampleMatcher SEARCH_CONDITION_MATCH_ANY = ExampleMatcher
-        .matchingAll()
-        .withIgnoreCase()
-        .withIgnoreNullValues()
-        .withStringMatcher(ExampleMatcher.StringMatcher.CONTAINING);
-    /*
-    Basically this is saying that the ExampleMatcher matches with anything containing to the string equivalent of the values given
-    Works by providing a employee class and then getting an Example<Employees> with those matching values
-    .withIgnoreNullValues is included so that it null Values don't count towards matching
-    
-        */
-    
     public List<Employees> searchEmployees(String firstName, String lastName, String ssn, Long empid) {
         Employees searchFields = new Employees();
         searchFields.setFirstName(firstName);
@@ -99,13 +80,49 @@ public class AdminServices {
         searchFields.setSsn(ssn);
         searchFields.setEmpid(empid);
         
-        Example<Employees> searchResult = Example.of(searchFields, SEARCH_CONDITION_MATCH_ANY);
-        return employeesRepo.findAll(searchResult);
+        // Setting Custom Queries with JPA's ExampleMatcher
+        // This is for searchEmployees
+        ExampleMatcher SearchCondition_MatchAll = ExampleMatcher
+            .matchingAll()            // Basically finds a match between all provided fields (field1 AND field2)
+            .withIgnoreCase()        // Case-insensitive
+            .withIgnoreNullValues() // Ignore empty fields
+            .withStringMatcher(ExampleMatcher.StringMatcher.CONTAINING); // Uses LIKE
+
+        /*
+        Basically this ExampleMatcher is like a template for a SQL query that follows the format
+        SELECT * FROM TABLE
+        WHERE LOWER(field1) LIKE %input1% for any number of fields provided
+        We provide the search fields as firstName, secondName, ssn, and empid.
+        Example.of(searchFields, SearchCondition_MatchAll) will return a query definition.
+        employeesRepo then uses that query definition to find employees with the query.
+        */
+
+
+        Example<Employees> searchResult = Example.of(searchFields, SearchCondition_MatchAll); // get the results of the searchfield and the matching conditions
+        return employeesRepo.findAll(searchResult); // Search the database 
+    }
+    
+    // Takes a range from min to max salary range, finds the employees in that range and increase their salary by percent
+    public void updateEmployeesSalary(double incPercent, double minSalary , double maxSalary){
+
+        List<Employees> employees = employeesRepo.findBySalaryBetween(minSalary, maxSalary);
+
+        for (Employees e : employees) {
+            double updatedSalary = e.getSalary() * (1 + (incPercent / 100));
+            e.setSalary(updatedSalary);
+        }
+
+        employeesRepo.saveAll(employees);
     }
 
-    
-    /*
-    These functions are no longer needed after implementing the above function. 
+}
+
+/*
+    Retired Methods
+
+    These functions are no longer needed after implementing ExampleMatcher.
+
+
     public Employees getEmployeeById(long id){
         return employeesRepo.findById(id).orElseThrow(() -> new EntityNotFoundException("Employee not found with EmpId" + id));
     }
@@ -125,22 +142,4 @@ public class AdminServices {
     public Employees getEmployeesByLastName(String lastName){
         return employeesRepo.findByLastName(lastName).orElseThrow(()-> new EntityNotFoundException("Employee not found with last name" + lastName));
     }
-        */
-    
-    // Takes a range from min to max salary range, finds the employees in that range and increase their salary by percent
-    public void updateEmployeesSalary(double incPercent, double minSalary , double maxSalary){
-        ResponseEntity<?> adjustSalaries(
-        @RequestParam double percentage,
-        @RequestParam double minSalary,
-        @RequestParam double maxSalary) {
-
-        List<Employee> employees = employeeRepository.findBySalaryBetween(minSalary, maxSalary);
-
-        for (Employee e : employees) {
-            double updatedSalary = e.getSalary() * (1 + (percentage / 100));
-            e.setSalary(updatedSalary);
-        }
-
-        employeeRepository.saveAll(employees);
-    }
-}
+*/
