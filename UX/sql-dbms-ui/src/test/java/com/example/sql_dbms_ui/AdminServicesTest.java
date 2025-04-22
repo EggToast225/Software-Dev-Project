@@ -19,6 +19,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.data.domain.Example;
+
 import jakarta.persistence.EntityNotFoundException;
 
 
@@ -89,33 +91,61 @@ public class AdminServicesTest {
         assertEquals("John", result.get(0).getFirstName());
     }
 
-    // Get employee from their corresponding id
-    // Test to see if employee matches with testEmployee's first name and last name
+    // Test searchEmployees with matching fields
     @Test
-    void testGetEmployeeById(){
-        when(employeesRepo.findById(1L)).thenReturn(Optional.of(testEmployee));
-        Employees found = adminServices.getEmployeeById(1L);
-        assertEquals("John", found.getFirstName());
-        assertEquals("Doe", found.getLastName());
+    void testSearchEmployees() {
+        when(employeesRepo.findAll(any(Example.class))).thenReturn(List.of(testEmployee));
+
+        List<Employees> result = adminServices.searchEmployees("John", "Doe", "123-45-6789", 1L);
+        
+        assertEquals("John", result.get(0).getFirstName());
+        assertEquals("Doe", result.get(0).getLastName());
+        assertEquals(1, result.size());
+
     }
 
-    // See if a EntityNotFoundException is thrown as it is expected
-    // () -> is a lambda expression that execute the function so that assertThrow catches it
-    // Test is to see if it throws that specific exception
+    // Test searchEmployees with no matches
     @Test
-    void testGetEmployeeByIdNotFound(){
-        when(employeesRepo.findById(1L)).thenReturn(Optional.empty());
-        assertThrows(EntityNotFoundException.class, () -> adminServices.getEmployeeById(1L));
+    void testSearchEmployeesNotFound() {
+        when(employeesRepo.findAll()).thenReturn(List.of());
+        List<Employees> result = adminServices.searchEmployees("Jane", "Smith", "000-00-0000", 99L);
+        assertTrue(result.isEmpty());
     }
 
 
     // See if updateEmployeeSalary updates selected employee's salary
     @Test
-    void testUpdateEmployeeSalary() {
-        when(employeesRepo.findById(1L)).thenReturn(Optional.of(testEmployee));
-        adminServices.updateEmployeeSalary(1L, 70000);
-        assertEquals(70000, testEmployee.getSalary());
-        verify(employeesRepo, times(1)).save(testEmployee);
+    void testUpdateEmployeesSalary() {
+        // Create 3 employees
+        Employees emp1 = new Employees();
+        emp1.setEmpid(1L);
+        emp1.setSalary(60000);
+
+        Employees emp2 = new Employees();
+        emp2.setEmpid(2L);
+        emp2.setSalary(80000);
+
+        // Outside of Range
+        Employees emp3 = new Employees();
+        emp3.setEmpid(3L);
+        emp3.setSalary(50000);
+
+        // Should only be emp1 and emp2 as they in the salary range
+        List<Employees> employeeList = List.of(emp1, emp2); 
+
+        // Mock the repository to return employees in the specified salary range
+        when(employeesRepo.findBySalaryBetween(58000, 105000)).thenReturn(employeeList);
+
+        // Call the method with 10% increase
+        adminServices.updateEmployeesSalary(10.0, 58000, 105000);
+
+        // Check that salaries are updated correctly
+        assertEquals(66000, emp1.getSalary());
+        assertEquals(88000, emp2.getSalary());
+        assertEquals(50000, emp3.getSalary());
+
+        // Verify that saveAll was called with the modified list
+        verify(employeesRepo, times(1)).saveAll(employeeList);
     }
 
 }
