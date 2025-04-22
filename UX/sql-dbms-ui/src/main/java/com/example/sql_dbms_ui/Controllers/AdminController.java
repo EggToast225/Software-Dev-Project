@@ -17,36 +17,46 @@ import org.springframework.web.bind.annotation.RestController;
 import com.example.sql_dbms_ui.Models.Employees;
 import com.example.sql_dbms_ui.Services.AdminServices;
 
+import jakarta.persistence.EntityNotFoundException;
+
 
 @RestController
 @RequestMapping(value = "/api/admin")
 public class AdminController{
 
+    // Establish a service layer from controller to AdminServices
+
     private final AdminServices adminServices;
 
-    AdminController(AdminServices adminServices){
+    private AdminController(AdminServices adminServices){
         this.adminServices = adminServices;
     }
 
-
-    //@PostMapping used because we want to save to database; saves new employee
+    // Create and save a new employee
     @PostMapping
     public ResponseEntity<Employees> saveEmployee(@RequestBody Employees newEmployee) {
         adminServices.createUser(newEmployee);
         return ResponseEntity.status(HttpStatus.CREATED).body(newEmployee);
     }
 
-    //Get all employees
+    // Return a list of all employees
     @GetMapping
     public List<Employees> getAllEmployees(){
         return adminServices.getAllEmployees();
     }
 
-    // Updates the User by their primary key/id, handles HTTP Patch request
-    // Right now, it's just first and last name being updated.
+    // Updates user information
     @PatchMapping("/{empid}")
-    public Employees updateEmployee(@PathVariable("empid") long EmpID, @RequestBody Employees employeeUpdates){
-        return adminServices.updateEmployee(EmpID, employeeUpdates);
+    public ResponseEntity<Employees> updateEmployee(@PathVariable("empid") long EmpID, @RequestBody Employees employeeUpdates){
+        try{
+            Employees updatedEmployee = adminServices.updateEmployee(EmpID, employeeUpdates); // Returns an employee
+            return ResponseEntity.ok(updatedEmployee);
+        } catch (EntityNotFoundException e) { // No Employee found
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+        }
+        catch (Exception e){ // Error from server
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+        }
     }
 
     // Handles HTTP Delete request
@@ -57,30 +67,34 @@ public class AdminController{
     }
 
     @GetMapping("/search")
-    public List<Employees> searchEmployees(
+    public ResponseEntity<List<Employees>> searchEmployees(
         @RequestParam(required = false) String firstName,
         @RequestParam(required = false) String lastName,
         @RequestParam(required = false) String ssn,
-        @RequestParam(required = false) Long empid
-    ) {
-        return adminServices.searchEmployees(firstName, lastName, ssn, empid);
+        @RequestParam(required = false) Long empid)
+        {
+            try {
+                List<Employees> results = adminServices.searchEmployees(firstName, lastName, ssn, empid);
+                return ResponseEntity.ok(results); // return a list of employees, including empty ones
+            } catch (Exception e) {
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build(); // return error message
+            }
     }
 
+    // Provide a list of employees between salary range.
+    @GetMapping("/search-salary")
+    public List<Employees> findEmployeesBetweenSalary(double minSalary, double maxSalary){
+        return adminServices.findEmployeesBetweenSalary(minSalary, maxSalary);
+    }
+
+    //  Update the salary ranges of employees between salary range.
     @PatchMapping("/salary-adjustment")
     public ResponseEntity<?> adjustSalaries(
         @RequestParam double percentage,
         @RequestParam double minSalary,
-        @RequestParam double maxSalary) {
-
-        List<Employee> employees = employeeRepository.findBySalaryBetween(minSalary, maxSalary);
-
-        for (Employee e : employees) {
-            double updatedSalary = e.getSalary() * (1 + (percentage / 100));
-            e.setSalary(updatedSalary);
+        @RequestParam double maxSalary
+        ){
+            adminServices.updateEmployeesSalary(percentage, minSalary, maxSalary);
+            return ResponseEntity.ok("Employees have been updated");
         }
-
-        employeeRepository.saveAll(employees);
-
-        return ResponseEntity.ok("Salaries updated for " + employees.size() + " employees.");
-    }
 }
