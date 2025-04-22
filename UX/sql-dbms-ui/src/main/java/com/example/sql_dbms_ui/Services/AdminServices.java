@@ -7,7 +7,10 @@ import org.springframework.data.domain.ExampleMatcher;
 import org.springframework.stereotype.Service;
 
 import com.example.sql_dbms_ui.Models.Employees;
+import com.example.sql_dbms_ui.Models.Payroll;
 import com.example.sql_dbms_ui.repo.EmployeesRepo;
+import com.example.sql_dbms_ui.repo.PayrollRepo;
+
 
 import jakarta.persistence.EntityNotFoundException;
 
@@ -17,9 +20,11 @@ import jakarta.persistence.EntityNotFoundException;
 public class AdminServices {
 
     private final EmployeesRepo employeesRepo;
+    private final PayrollRepo   payrollRepo;
 
-    public AdminServices(EmployeesRepo employeesRepo){
+    private AdminServices(EmployeesRepo employeesRepo, PayrollRepo payrollRepo){
         this.employeesRepo = employeesRepo;
+        this.payrollRepo = payrollRepo;
     }
 
     // Create new user then stores it in database
@@ -47,14 +52,16 @@ public class AdminServices {
 
     // Delete Employee by ID
     public void delete(Long EmpID){
-        Employees delEmp = employeesRepo.findById(EmpID).orElseThrow(()-> new EntityNotFoundException("Employee not found with EmpID " + EmpID));
+        Employees delEmp = employeesRepo.findById(EmpID)
+        .orElseThrow(()-> new EntityNotFoundException("Employee not found with EmpID " + EmpID));
         employeesRepo.delete(delEmp);
     }
 
     // Update Employees
     public Employees updateEmployee(Long id,Employees employee){
         // Find the existing employee, otherwise throw error
-        Employees existing = employeesRepo.findById(id).orElseThrow(()-> new RuntimeException("Employee not found"));
+        Employees existing = employeesRepo.findById(id)
+        .orElseThrow(()-> new RuntimeException("Employee not found"));
 
         existing.setFirstName(employee.getFirstName());
         existing.setLastName(employee.getLastName());
@@ -73,6 +80,16 @@ public class AdminServices {
 
     //Search for an employee using name, DOB, SSN, empid to show their information for editing
     //(Admin only)
+    
+    /*
+        Basically this ExampleMatcher is like a template for a SQL query that follows the format
+        SELECT * FROM TABLE
+        WHERE LOWER(field1) LIKE %input1% for any number of fields provided
+        We provide the search fields as firstName, secondName, ssn, and empid.
+        Example.of(searchFields, SearchCondition_MatchAll) will return a query definition.
+        employeesRepo then uses that query definition to find employees with the query.
+    */
+    
     public List<Employees> searchEmployees(String firstName, String lastName, String ssn, Long empid) {
         Employees searchFields = new Employees();
         searchFields.setFirstName(firstName);
@@ -88,20 +105,11 @@ public class AdminServices {
             .withIgnoreNullValues() // Ignore empty fields
             .withStringMatcher(ExampleMatcher.StringMatcher.CONTAINING); // Uses LIKE
 
-        /*
-        Basically this ExampleMatcher is like a template for a SQL query that follows the format
-        SELECT * FROM TABLE
-        WHERE LOWER(field1) LIKE %input1% for any number of fields provided
-        We provide the search fields as firstName, secondName, ssn, and empid.
-        Example.of(searchFields, SearchCondition_MatchAll) will return a query definition.
-        employeesRepo then uses that query definition to find employees with the query.
-        */
-
-
-        Example<Employees> searchResult = Example.of(searchFields, SearchCondition_MatchAll); // get the results of the searchfield and the matching conditions
-        return employeesRepo.findAll(searchResult); // Search the database 
+        Example<Employees> searchQuery = Example.of(searchFields, SearchCondition_MatchAll); // get example query
+        return employeesRepo.findAll(searchQuery); // Search the database with example query
     }
-    
+
+
     // Takes a range from min to max salary range, finds the employees in that range and increase their salary by percent
     public void updateEmployeesSalary(double incPercent, double minSalary , double maxSalary){
 
@@ -114,6 +122,19 @@ public class AdminServices {
 
         employeesRepo.saveAll(employees);
     }
+    
+    // Provides a list of employees found within a range from min to max salary range
+    public List<Employees> findEmployeesBetweenSalary(double minSalary, double maxSalary){
+        return employeesRepo.findBySalaryBetween(minSalary, maxSalary);
+    }
+
+
+    // getPayroll
+    public Payroll getPayrollById(long id){
+        return payrollRepo.findById(id)
+        .orElseThrow(() -> new EntityNotFoundException("Employee's payroll not found with Id " + id));
+    }
+
 
 }
 
