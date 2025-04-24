@@ -19,7 +19,10 @@ import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
+import org.hibernate.persister.entity.mutation.UpdateCoordinator;
 import org.springframework.data.domain.Example;
+
+import com.example.sql_dbms_ui.Services.EmployeeServices;
 
 import jakarta.persistence.EntityNotFoundException;
 
@@ -112,6 +115,51 @@ public class AdminServicesTest {
         assertTrue(result.isEmpty());
     }
 
+    @Test
+    void testUpdateEmployees(){
+        Employees updatedEmployee = new Employees();
+
+        updatedEmployee.setEmpid(2L);
+        updatedEmployee.setFirstName("Bill");
+        updatedEmployee.setLastName("Baskin");
+        updatedEmployee.setEmail("billbask@email.com");
+        updatedEmployee.setHireDate(new Date());
+        updatedEmployee.setSalary(1234567890);
+        updatedEmployee.setSsn("234-56-7891");
+        updatedEmployee.setGender("Other");
+        updatedEmployee.setIdentifiedRace(" ");
+        updatedEmployee.setDob(new Date());
+        updatedEmployee.setPhone("999-999-9999");
+
+        
+        // mock findById
+        when(employeesRepo.findById(1L)).thenReturn(Optional.of(testEmployee)); //return test employee if findById(1L)
+        // mock save
+        when(employeesRepo.save(testEmployee)).thenReturn(testEmployee);
+
+        Employees result = adminServices.updateEmployee(1L, updatedEmployee);
+
+        assertEquals("Bill", result.getFirstName());
+        assertEquals("Baskin", result.getLastName());
+        assertEquals("billbask@email.com", result.getEmail());
+        assertEquals(1234567890, result.getSalary());
+        assertEquals("234-56-7891", result.getSsn());
+        assertEquals("Other", result.getGender());
+        assertEquals(" ", result.getIdentifiedRace());
+        assertEquals("999-999-9999", result.getPhone());
+    }
+
+    @Test
+    void testUpdateNotEmployees(){
+        when(employeesRepo.findById(99L)).thenReturn(Optional.empty());
+
+        Employees updatedEmployee = new Employees();
+        updatedEmployee.setFirstName("not real");
+        updatedEmployee.setLastName("fake");
+
+        assertThrows(Exception.class, () -> adminServices.updateEmployee(99L, updatedEmployee));
+
+    }
 
     // See if updateEmployeeSalary updates selected employee's salary
     @Test
