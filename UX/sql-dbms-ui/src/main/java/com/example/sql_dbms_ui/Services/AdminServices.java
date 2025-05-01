@@ -1,6 +1,8 @@
 package com.example.sql_dbms_ui.Services;
 
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.springframework.data.domain.Example;
 import org.springframework.data.domain.ExampleMatcher;
@@ -8,26 +10,27 @@ import org.springframework.stereotype.Service;
 
 import com.example.sql_dbms_ui.Models.Employees;
 import com.example.sql_dbms_ui.Models.Payroll;
+import com.example.sql_dbms_ui.Services.Interfaces.AdminInterface;
 import com.example.sql_dbms_ui.repo.EmployeesRepo;
 import com.example.sql_dbms_ui.repo.PayrollRepo;
-
 
 import jakarta.persistence.EntityNotFoundException;
 
 // Business Logic for Admin side, part of service layer
 
 @Service
-public class AdminServices {
+public class AdminServices implements AdminInterface{
 
     private final EmployeesRepo employeesRepo;
     private final PayrollRepo   payrollRepo;
 
-    private AdminServices(EmployeesRepo employeesRepo, PayrollRepo payrollRepo){
+    public AdminServices(EmployeesRepo employeesRepo, PayrollRepo payrollRepo){
         this.employeesRepo = employeesRepo;
         this.payrollRepo = payrollRepo;
     }
 
     // Create new user then stores it in database
+    @Override
     public void createUser(Employees newEmployee){
         Employees employee = new Employees(
             newEmployee.getFirstName(),
@@ -51,6 +54,7 @@ public class AdminServices {
     }
 
     // Delete Employee by ID
+    @Override
     public void delete(Long EmpID){
         Employees delEmp = employeesRepo.findById(EmpID)
         .orElseThrow(()-> new EntityNotFoundException("Employee not found with EmpID " + EmpID));
@@ -58,6 +62,7 @@ public class AdminServices {
     }
 
     // Update Employees
+    @Override
     public Employees updateEmployee(Long id,Employees employee){
         // Find the existing employee, otherwise throw error
         Employees existing = employeesRepo.findById(id)
@@ -90,6 +95,7 @@ public class AdminServices {
         employeesRepo then uses that query definition to find employees with the query.
     */
     
+    @Override
     public List<Employees> searchEmployees(String firstName, String lastName, String ssn, Long empid) {
         Employees searchFields = new Employees();
         searchFields.setFirstName(firstName);
@@ -111,6 +117,7 @@ public class AdminServices {
 
 
     // Takes a range from min to max salary range, finds the employees in that range and increase their salary by percent
+    @Override
     public void updateEmployeesSalary(double incPercent, double minSalary , double maxSalary){
 
         List<Employees> employees = employeesRepo.findBySalaryBetween(minSalary, maxSalary);
@@ -130,37 +137,40 @@ public class AdminServices {
 
 
     // getPayroll
+    @Override
     public Payroll getPayrollById(long id){
         return payrollRepo.findById(id)
         .orElseThrow(() -> new EntityNotFoundException("Employee's payroll not found with Id " + id));
     }
 
+    // get Monthly Earnings by JobTitle
+    public Map<String,Double> getTotalMonthlyEarningsByJobTitle(int year, int month){
+        List<Map<String, Object>> results = payrollRepo.findTotalMonthlyEarningsByJobTitle(year, month);
+        
+        return results.stream().collect(Collectors.toMap(
+            result -> (String) result.get("jobTitle"),
+            result -> ((Number) result.get("netPay")).doubleValue()
+            ));
+    }
 
+    public Map<String,Double> getTotalMonthlyEarningsByDivision(int year, int month){
+        List<Map<String, Object>> results = payrollRepo.findTotalMonthlyEarningsByDivision(year, month);
+
+        return results.stream().collect(Collectors.toMap(
+            result -> (String) result.get("divison"),
+            result -> ((Number) result.get("netPay")).doubleValue()
+        ));
+    }
+
+    public List<Payroll> findAllByOrderByEmployeeEmpidAscPayDateAsc(){
+        return payrollRepo.findAllByOrderByEmployeeEmpidAscPayDateAsc();
+    }
+
+    public List<Payroll> findByEmployeeEmpidOrderByPayDateAsc(Long empid){
+        return payrollRepo.findByEmployeeEmpidOrderByPayDateAsc(empid);
+    }
+
+    public List<Payroll> findByEmployeeEmpidOrderByPayDateDesc(Long empid){
+        return payrollRepo.findByEmployeeEmpidOrderByPayDateDesc(empid);
+    }
 }
-
-/*
-    Retired Methods
-
-    These functions are no longer needed after implementing ExampleMatcher.
-
-
-    public Employees getEmployeeById(long id){
-        return employeesRepo.findById(id).orElseThrow(() -> new EntityNotFoundException("Employee not found with EmpId" + id));
-    }
-
-    public Employees getEmployeeBySSN(String ssn){
-        return employeesRepo.findBySsn(ssn).orElseThrow(() -> new EntityNotFoundException("Employee not found with SSN:" + ssn));
-    }
-    
-    public Employees getEmployeeByDOB(Date dob){
-        return employeesRepo.findByDob(dob).orElseThrow(()-> new EntityNotFoundException("Employees not found with Date of Birth:" + dob));
-    }
-
-    public Employees getEmployeesByFirstName(String firstName){
-        return employeesRepo.findByFirstName(firstName).orElseThrow(()-> new EntityNotFoundException("Employee not found with first name" + firstName));
-    }
-
-    public Employees getEmployeesByLastName(String lastName){
-        return employeesRepo.findByLastName(lastName).orElseThrow(()-> new EntityNotFoundException("Employee not found with last name" + lastName));
-    }
-*/

@@ -4,6 +4,7 @@ import org.springframework.stereotype.Service;
 
 import com.example.sql_dbms_ui.Models.Payroll;
 import com.example.sql_dbms_ui.Models.Employees;
+import com.example.sql_dbms_ui.Services.Interfaces.EmployeeInterface;
 
 import com.example.sql_dbms_ui.repo.EmployeesRepo;
 import com.example.sql_dbms_ui.repo.PayrollRepo;
@@ -11,7 +12,7 @@ import com.example.sql_dbms_ui.repo.PayrollRepo;
 import jakarta.persistence.EntityNotFoundException;
 
 @Service
-public class EmployeeServices {
+public class EmployeeServices implements EmployeeInterface {
     
     private final EmployeesRepo employeesRepo;
     private final PayrollRepo payrollRepo;

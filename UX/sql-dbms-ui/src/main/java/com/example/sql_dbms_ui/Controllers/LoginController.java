@@ -35,11 +35,11 @@ public class LoginController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<Map<String, String>> login(@RequestBody LoginRequest LoginRequest){
+    public ResponseEntity<Map<String, String>> login(@RequestBody LoginRequest loginRequest){
         try{
             Authentication authenticationRequest = 
                 UsernamePasswordAuthenticationToken.unauthenticated(
-                    LoginRequest.username(), LoginRequest.password());
+                    loginRequest.username(), loginRequest.password());
             
             // Authentication Manager handles authentication process in backend and sends response to frontend
             Authentication authenticationResponse = authenticationManager.authenticate(authenticationRequest);

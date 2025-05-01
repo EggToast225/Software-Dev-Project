@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.sql_dbms_ui.Models.Employees;
+import com.example.sql_dbms_ui.Models.Payroll;
 import com.example.sql_dbms_ui.Services.AdminServices;
 
 import jakarta.persistence.EntityNotFoundException;
@@ -89,7 +90,7 @@ public class AdminController{
 
     //  Update the salary ranges of employees between salary range.
     @PatchMapping("/salary-adjustment")
-    public ResponseEntity<?> adjustSalaries(
+    public ResponseEntity<?> updateEmployeeSalary(
         @RequestParam double percentage,
         @RequestParam double minSalary,
         @RequestParam double maxSalary
@@ -97,4 +98,32 @@ public class AdminController{
             adminServices.updateEmployeesSalary(percentage, minSalary, maxSalary);
             return ResponseEntity.ok("Employees have been updated");
         }
+
+    @GetMapping("/get_payroll")
+    public ResponseEntity<?> getPayrollById(Long id){
+        return ResponseEntity.ok(adminServices.getPayrollById(id));
+    }
+
+    @GetMapping("/job-titles/monthly-net-pay")
+    public ResponseEntity<?> getMonthlyNetPayByJobTitle(@RequestParam int year,@RequestParam int month) {
+        return ResponseEntity.ok(adminServices.getTotalMonthlyEarningsByJobTitle(year, month));
+    }
+
+    @GetMapping("/division/monthly-net-pay")
+    public ResponseEntity<?> getMonthlyNetPayByDivision(@RequestParam int year,@RequestParam int month) {
+        return ResponseEntity.ok(adminServices.getTotalMonthlyEarningsByDivision(year, month));
+    }
+
+    @GetMapping("/division/monthly-net-pay/{empid}")
+    public ResponseEntity<?> findByEmployeeEmpidOrderByPayDateDesc(@PathVariable Long empid){
+        return ResponseEntity.ok(adminServices.findByEmployeeEmpidOrderByPayDateDesc(empid));
+    }
+
+    public ResponseEntity<?> findByEmployeeEmpidOrderByPayDateAsc(Long empid){
+        return ResponseEntity.ok(adminServices.findByEmployeeEmpidOrderByPayDateAsc(empid));
+    }
+
+    public ResponseEntity<?> findAllByOrderByEmployeeEmpidAscPayDateAsc(){
+        return ResponseEntity.ok(adminServices.findAllByOrderByEmployeeEmpidAscPayDateAsc());
+    }
 }

@@ -83,6 +83,8 @@
         </tbody>
       </table>
     </div>
+
+    <!-- Editing Employee -->
     <div v-if="editingEmployee">
     <h2>Edit Employee</h2>
     <fieldset>
@@ -101,6 +103,11 @@
     <button @click="submitEdit">Save Changes</button>
     <button @click="cancelEdit">Cancel</button>
     </div>
+
+    <h2> Salary Manager</h2>
+    <SalaryManager>
+    </SalaryManager>
+
 
     <!-- All Employees Table -->
     <h2>All Employees</h2>
@@ -143,13 +150,20 @@
     </table>
   </div>
 
+
+  <button @click="goToPayHistory">View Pay History</button>
+
   
 </template>
 
 <script setup>
+// Im not gonna lie, this entire thing is a mess and I should have made components and made the page with them instead,
+// please excuse this terrible code base
+
 import { ref, onMounted } from 'vue'
 import axios from 'axios'
 import { useRouter } from 'vue-router'
+import SalaryManager from '../components/SalaryManager.vue'
 
 const router = useRouter()
 
@@ -280,6 +294,11 @@ const submitEdit = async () => {
     console.error('Update failed:', err)
   }
 }
+
+const goToPayHistory = () => {
+  router.push('/pay-history')
+}
+
 onMounted(() => {
   axios.get('api/auth/verify')
   .then(()=> {

@@ -2,6 +2,7 @@ import { createRouter, createWebHistory } from 'vue-router'
 import AdminView from '../views/AdminView.vue'
 import EmployeeView from '../views/EmployeeView.vue'
 import AuthenticationView from '../views/AuthenticationView.vue'
+import PayrollView from '../views/PayrollView.vue'
 
 const routes = [
   { path: '/admin',
@@ -12,7 +13,12 @@ const routes = [
     component: EmployeeView,
     meta: {requiresRole: 'EMPLOYEE'}
   },
-  { path: '/', component: AuthenticationView }
+  { path: '/', component: AuthenticationView },
+
+  { path: '/pay-history',
+    component: PayrollView
+  }
+
 ]
 
 const router = createRouter({
