@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.example.sql_dbms_ui.Models.Employees;
 import com.example.sql_dbms_ui.Models.Payroll;
 import com.example.sql_dbms_ui.Services.AdminServices;
+import com.example.sql_dbms_ui.Services.DTO.EmployeeDTO;
 
 import jakarta.persistence.EntityNotFoundException;
 
@@ -35,7 +36,7 @@ public class AdminController{
 
     // Create and save a new employee
     @PostMapping
-    public ResponseEntity<Employees> saveEmployee(@RequestBody Employees newEmployee) {
+    public ResponseEntity<?> saveEmployee(@RequestBody EmployeeDTO newEmployee) {
         adminServices.createUser(newEmployee);
         return ResponseEntity.status(HttpStatus.CREATED).body(newEmployee);
     }

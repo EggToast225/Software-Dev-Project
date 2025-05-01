@@ -1,5 +1,6 @@
 package com.example.sql_dbms_ui.Services;
 
+import java.sql.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -8,11 +9,14 @@ import org.springframework.data.domain.Example;
 import org.springframework.data.domain.ExampleMatcher;
 import org.springframework.stereotype.Service;
 
+import com.example.sql_dbms_ui.Models.Address;
+import com.example.sql_dbms_ui.Models.State;
+import com.example.sql_dbms_ui.Models.City;
 import com.example.sql_dbms_ui.Models.Employees;
 import com.example.sql_dbms_ui.Models.Payroll;
 import com.example.sql_dbms_ui.Services.Interfaces.AdminInterface;
-import com.example.sql_dbms_ui.repo.EmployeesRepo;
-import com.example.sql_dbms_ui.repo.PayrollRepo;
+import com.example.sql_dbms_ui.repo.*;
+import com.example.sql_dbms_ui.Services.DTO.EmployeeDTO;
 
 import jakarta.persistence.EntityNotFoundException;
 
@@ -23,30 +27,58 @@ public class AdminServices implements AdminInterface{
 
     private final EmployeesRepo employeesRepo;
     private final PayrollRepo   payrollRepo;
+    private final CityRepo      cityRepo;
+    private final StateRepo     stateRepo;
+    private final AddressRepo   addressRepo;
+    
 
-    public AdminServices(EmployeesRepo employeesRepo, PayrollRepo payrollRepo){
-        this.employeesRepo = employeesRepo;
-        this.payrollRepo = payrollRepo;
+    public AdminServices(EmployeesRepo employeesRepo, PayrollRepo payrollRepo, CityRepo cityRepo, StateRepo stateRepo, AddressRepo addressRepo){
+        this.employeesRepo  = employeesRepo;
+        this.payrollRepo    = payrollRepo;
+        this.cityRepo       = cityRepo;
+        this.stateRepo      = stateRepo;
+        this.addressRepo    = addressRepo;
     }
 
+    
     // Create new user then stores it in database
-    @Override
-    public void createUser(Employees newEmployee){
-        Employees employee = new Employees(
-            newEmployee.getFirstName(),
-            newEmployee.getLastName(),
-            newEmployee.getEmail(),
-            newEmployee.getHireDate(),
-            newEmployee.getSalary(),
-            newEmployee.getSsn(),
-            newEmployee.getAddress(),
-            newEmployee.getGender(),
-            newEmployee.getIdentifiedRace(),
-            newEmployee.getDob(),
-            newEmployee.getPhone()
-            );
+    public void createUser(EmployeeDTO dto){
+        Employees employee = new Employees();
+        employee.setFirstName(dto.firstName);
+        employee.setLastName(dto.lastName);
+        employee.setEmail(dto.email);
+        employee.setHireDate(dto.hireDate);
+        employee.setSalary(dto.salary);
+        employee.setSsn(dto.ssn);
+        employee.setGender(dto.gender);
+        employee.setIdentifiedRace(dto.identifiedRace);
+        employee.setDob(dto.dob);
+        employee.setPhone(dto.phone);
+
+        // Address logic
+        City city = cityRepo.findByCityName(dto.address.cityName).orElseGet(()-> {
+            City newCity = new City();
+            newCity.setCityName(dto.address.cityName);
+            return cityRepo.save(newCity);
+        });
+
+        State state = stateRepo.findByStateName(dto.address.stateName).orElseGet(()->{
+            State newState = new State();
+            newState.setStateName(dto.address.stateName);
+            return stateRepo.save(newState);
+        });
+
+        Address address = new Address();
+        address.setStreet(dto.address.street);
+        address.setZip(dto.address.zip);
+        address.setCity(city);
+        address.setState(state);
+        addressRepo.save(address);
+
+        employee.setAddress(address);
         employeesRepo.save(employee);
-    };
+    }
+
 
     // Get all Employees
     public List<Employees> getAllEmployees(){

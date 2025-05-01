@@ -39,7 +39,7 @@ public class Employees {
 
     @ManyToOne
     @JoinColumn(name = "address_id")
-    private Address address;
+    public Address address;
 
     @Column(name = "gender")
     private String gender;
@@ -59,14 +59,13 @@ public class Employees {
     // Constructor for object
     public Employees(){}
 
-    public Employees(String firstName, String lastName, String email, Date hireDate, double salary, String ssn, Address address, String gender, String identifiedRace, Date dob, String phone){
+    public Employees(String firstName, String lastName, String email, Date hireDate, double salary, String ssn, String gender, String identifiedRace, Date dob, String phone){
         this.firstName=firstName;
         this.lastName=lastName;
         this.email =  email;
         this.hireDate = hireDate;
         this.salary = salary;
         this.ssn = ssn;
-        this.address = address;
         this.gender = gender;
         this.identifiedRace = identifiedRace;
         this.dob = dob;

@@ -26,6 +26,14 @@
       <input v-model="form.salary" placeholder="Salary" />
     </fieldset>
 
+    <fieldset>
+    <legend>Address Info</legend>
+      <input v-model="form.address.street" placeholder="Street" />
+      <input v-model="form.address.cityName" placeholder="City" />
+      <input v-model="form.address.stateName" placeholder="State" />
+      <input v-model="form.address.zip" placeholder="ZIP Code" />
+    </fieldset>
+
     <button @click="addEmployee">Add Employee</button>
 
     <!-- Search Section -->
@@ -89,16 +97,38 @@
     <h2>Edit Employee</h2>
     <fieldset>
       <legend>Update Info</legend>
+    <fieldset>
+      <legend>Personal Info</legend>
       <input v-model="editingEmployee.firstName" placeholder="First Name" />
       <input v-model="editingEmployee.lastName" placeholder="Last Name" />
-      <input v-model="editingEmployee.email" placeholder="Email" />
-      <input v-model="editingEmployee.phone" placeholder="Phone" />
-      <input v-model="editingEmployee.salary" placeholder="Salary" />
-      <input v-model="editingEmployee.hireDate" placeholder="Hire Date (YYYY-MM-DD)" />
+      <input v-model="editingEmployee.dob" placeholder="Date of Birth (YYYY-MM-DD)" />
       <input v-model="editingEmployee.gender" placeholder="Gender" />
       <input v-model="editingEmployee.identifiedRace" placeholder="Identified Race" />
-      <input v-model="editingEmployee.dob" placeholder="Date of Birth (YYYY-MM-DD)" />
+  
       <input v-model="editingEmployee.ssn" placeholder="SSN" />
+    </fieldset>
+
+    <fieldset>
+      <legend>Contact Info</legend>
+      <input v-model="editingEmployee.email" placeholder="Email" />
+      <input v-model="editingEmployee.phone" placeholder="Phone" />
+    </fieldset>
+
+    <fieldset>
+      <legend>Job Info</legend>
+      <input v-model="editingEmployee.hireDate" placeholder="Hire Date (YYYY-MM-DD)" />
+      <input v-model="editingEmployee.salary" placeholder="Salary" />
+    </fieldset>
+
+    <fieldset>
+      <legend>Address Info</legend>
+      <input v-model="editingEmployee.address.street" placeholder="Street"/>
+      <input v-model="editingEmployee.address.cityName" placeholder="City"/>
+      <input v-model="editingEmployee.address.stateName" placeholder="State"/>
+      <input v-model="editingEmployee.address.zip" placeholder="Zipcode"/>
+
+    </fieldset>
+      
     </fieldset>
     <button @click="submitEdit">Save Changes</button>
     <button @click="cancelEdit">Cancel</button>
@@ -125,6 +155,7 @@
           <th>Identified Race</th>
           <th>Date of Birth</th>
           <th>Phone</th>
+          <th>Address</th>
           <th>Action</th>
         </tr>
       </thead>
@@ -141,6 +172,7 @@
           <td>{{ e.identifiedRace }}</td>
           <td>{{ e.dob }}</td>
           <td>{{ e.phone }}</td>
+          <td>{{ formatAddress(e.address) }}</td>
           <td>
             <button @click="startEdit(e)">Edit</button>
             <button @click="deleteEmployee(e.empid)">Delete</button>
@@ -156,9 +188,10 @@
   
 </template>
 
+
+
 <script setup>
-// Im not gonna lie, this entire thing is a mess and I should have made components and made the page with them instead,
-// please excuse this terrible code base
+
 
 import { ref, onMounted } from 'vue'
 import axios from 'axios'
@@ -182,9 +215,25 @@ const form = ref({
   email: '',
   phone: '',
   hireDate: '',
-  salary: ''
+  salary: '',
+  address: {
+    street: '',
+    zip: '',
+    cityName : '',
+    stateName: ''
+  }
 })
 
+const formatAddress = (address) => {
+  if (!address) return 'N/A'
+
+  const street = address.street ?? ''
+  const zip = address.zip ?? ''
+  const city = address.cityName ?? ''
+  const state = address.stateName ?? ''
+
+  return `${street}, ${city}, ${state} ${zip}`.trim()
+}
 const employees = ref([])
 const filteredEmployees = ref([])
 const showSearchResults = ref(false)
