@@ -1,6 +1,7 @@
 package com.example.sql_dbms_ui.Services;
 
-import java.sql.Date;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -10,13 +11,17 @@ import org.springframework.data.domain.ExampleMatcher;
 import org.springframework.stereotype.Service;
 
 import com.example.sql_dbms_ui.Models.Address;
-import com.example.sql_dbms_ui.Models.State;
 import com.example.sql_dbms_ui.Models.City;
 import com.example.sql_dbms_ui.Models.Employees;
 import com.example.sql_dbms_ui.Models.Payroll;
-import com.example.sql_dbms_ui.Services.Interfaces.AdminInterface;
-import com.example.sql_dbms_ui.repo.*;
+import com.example.sql_dbms_ui.Models.State;
 import com.example.sql_dbms_ui.Services.DTO.EmployeeDTO;
+import com.example.sql_dbms_ui.Services.Interfaces.AdminInterface;
+import com.example.sql_dbms_ui.repo.AddressRepo;
+import com.example.sql_dbms_ui.repo.CityRepo;
+import com.example.sql_dbms_ui.repo.EmployeesRepo;
+import com.example.sql_dbms_ui.repo.PayrollRepo;
+import com.example.sql_dbms_ui.repo.StateRepo;
 
 import jakarta.persistence.EntityNotFoundException;
 
@@ -30,7 +35,6 @@ public class AdminServices implements AdminInterface{
     private final CityRepo      cityRepo;
     private final StateRepo     stateRepo;
     private final AddressRepo   addressRepo;
-    
 
     public AdminServices(EmployeesRepo employeesRepo, PayrollRepo payrollRepo, CityRepo cityRepo, StateRepo stateRepo, AddressRepo addressRepo){
         this.employeesRepo  = employeesRepo;
@@ -42,17 +46,26 @@ public class AdminServices implements AdminInterface{
 
     
     // Create new user then stores it in database
-    public void createUser(EmployeeDTO dto){
+    public void createUser(EmployeeDTO dto) {
         Employees employee = new Employees();
         employee.setFirstName(dto.firstName);
         employee.setLastName(dto.lastName);
         employee.setEmail(dto.email);
-        employee.setHireDate(dto.hireDate);
+        
+        // Convert string dates to java.sql.Date
+        if (dto.hireDate != null && !dto.hireDate.trim().isEmpty()) {
+            employee.setHireDate(java.sql.Date.valueOf(dto.hireDate));
+        }
+        
         employee.setSalary(dto.salary);
         employee.setSsn(dto.ssn);
         employee.setGender(dto.gender);
         employee.setIdentifiedRace(dto.identifiedRace);
-        employee.setDob(dto.dob);
+        
+        if (dto.dob != null && !dto.dob.trim().isEmpty()) {
+            employee.setDob(java.sql.Date.valueOf(dto.dob));
+        }
+        
         employee.setPhone(dto.phone);
 
         // Address logic
@@ -141,6 +154,7 @@ public class AdminServices implements AdminInterface{
             .matchingAll()            // Basically finds a match between all provided fields (field1 AND field2)
             .withIgnoreCase()        // Case-insensitive
             .withIgnoreNullValues() // Ignore empty fields
+            .withIgnorePaths("salary")
             .withStringMatcher(ExampleMatcher.StringMatcher.CONTAINING); // Uses LIKE
 
         Example<Employees> searchQuery = Example.of(searchFields, SearchCondition_MatchAll); // get example query
@@ -176,26 +190,54 @@ public class AdminServices implements AdminInterface{
     }
 
     // get Monthly Earnings by JobTitle
-    public Map<String,Double> getTotalMonthlyEarningsByJobTitle(int year, int month){
-        List<Map<String, Object>> results = payrollRepo.findTotalMonthlyEarningsByJobTitle(year, month);
+    public Map<String,Double> getTotalMonthlyEarningsByJobTitle(int year, int month) {
+        Calendar cal = Calendar.getInstance();
+        // Set to first day of selected month
+        cal.set(year, month - 1, 1, 0, 0, 0);
+        Date startDate = cal.getTime();
         
-        return results.stream().collect(Collectors.toMap(
-            result -> (String) result.get("jobTitle"),
-            result -> ((Number) result.get("netPay")).doubleValue()
+        // Set to last day of selected month
+        cal.set(Calendar.DAY_OF_MONTH, cal.getActualMaximum(Calendar.DAY_OF_MONTH));
+        cal.set(Calendar.HOUR_OF_DAY, 23);
+        cal.set(Calendar.MINUTE, 59);
+        cal.set(Calendar.SECOND, 59);
+        Date endDate = cal.getTime();
+
+        List<Map<String, Object>> results = payrollRepo.findTotalMonthlyEarningsByJobTitle(startDate, endDate);
+        
+        // Include all job titles, even those with null or zero earnings
+        return results.stream()
+            .collect(Collectors.toMap(
+                result -> (String) result.get("jobTitle"),
+                result -> result.get("earnings") != null ? ((Number)result.get("earnings")).doubleValue() : 0.0
             ));
     }
 
-    public Map<String,Double> getTotalMonthlyEarningsByDivision(int year, int month){
-        List<Map<String, Object>> results = payrollRepo.findTotalMonthlyEarningsByDivision(year, month);
+    public Map<String,Double> getTotalMonthlyEarningsByDivision(int year, int month) {
+        Calendar cal = Calendar.getInstance();
+        // Set to first day of selected month
+        cal.set(year, month - 1, 1, 0, 0, 0);
+        Date startDate = cal.getTime();
+        
+        // Set to last day of selected month
+        cal.set(Calendar.DAY_OF_MONTH, cal.getActualMaximum(Calendar.DAY_OF_MONTH));
+        cal.set(Calendar.HOUR_OF_DAY, 23);
+        cal.set(Calendar.MINUTE, 59);
+        cal.set(Calendar.SECOND, 59);
+        Date endDate = cal.getTime();
 
-        return results.stream().collect(Collectors.toMap(
-            result -> (String) result.get("divison"),
-            result -> ((Number) result.get("netPay")).doubleValue()
-        ));
+        List<Map<String, Object>> results = payrollRepo.findTotalMonthlyEarningsByDivision(startDate, endDate);
+
+        return results.stream()
+            .filter(result -> result.get("earnings") != null && ((Number)result.get("earnings")).doubleValue() > 0)
+            .collect(Collectors.toMap(
+                result -> (String) result.get("division"),
+                result -> ((Number) result.get("earnings")).doubleValue()
+            ));
     }
 
     public List<Payroll> findAllByOrderByEmployeeEmpidAscPayDateAsc(){
-        return payrollRepo.findAllByOrderByEmployeeEmpidAscPayDateAsc();
+        return payrollRepo.findAllByOrderByEmployee_EmpidAscPayDateAsc();
     }
 
     public List<Payroll> findByEmployeeEmpidOrderByPayDateAsc(Long empid){
