@@ -43,7 +43,7 @@ public class Payroll {
     private Double healthCare;
 
     @ManyToOne
-    @JoinColumn(name = "empid", referencedColumnName = "empid")
+    @JoinColumn(name = "empid")
     private Employees employee;
 
     // Getters and setters
@@ -127,11 +127,4 @@ public class Payroll {
         this.employee = employee;
     }
 
-    public JobTitle getJobTitle() {
-        return jobTitle;
-    }
-
-    public void setJobTitle(JobTitle jobTitle) {
-        this.jobTitle = jobTitle;
-    }
 }
