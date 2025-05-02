@@ -229,10 +229,12 @@ const formatAddress = (address) => {
 
   const street = address.street ?? ''
   const zip = address.zip ?? ''
-  const city = address.cityName ?? ''
-  const state = address.stateName ?? ''
+  // needs to be nested to get the city and state
+  const city = address.city?.cityName ?? ''
+  const state = address.state?.stateName ?? ''
 
-  return `${street}, ${city}, ${state} ${zip}`.trim()
+  // Only include non-empty parts, join with comma
+  return [street, city, state, zip].filter(Boolean).join(', ')
 }
 const employees = ref([])
 const filteredEmployees = ref([])
