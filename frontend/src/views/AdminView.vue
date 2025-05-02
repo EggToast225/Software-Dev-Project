@@ -27,7 +27,7 @@
     </fieldset>
 
     <fieldset>
-    <legend>Address Info</legend>
+      <legend>Address Info</legend>
       <input v-model="form.address.street" placeholder="Street" />
       <input v-model="form.address.cityName" placeholder="City" />
       <input v-model="form.address.stateName" placeholder="State" />
@@ -74,17 +74,17 @@
             <td>{{ e.firstName }}</td>
             <td>{{ e.lastName }}</td>
             <td>{{ e.email }}</td>
-            <td>{{ e.hireDate }}</td>
+            <td>{{ formatDate(e.hireDate) }}</td>
             <td>{{ e.salary }}</td>
             <td>{{ e.ssn }}</td>
             <td>{{ e.gender }}</td>
             <td>{{ e.identifiedRace }}</td>
-            <td>{{ e.dob }}</td>
+            <td>{{ formatDate(e.dob) }}</td>
             <td>{{ e.phone }}</td>
-            
+
             <td>
-            <button @click="startEdit(e)">Edit</button>
-            <button @click="deleteEmployee(e.empid)">Delete</button>
+              <button @click="startEdit(e)">Edit</button>
+              <button @click="deleteEmployee(e.empid)">Delete</button>
             </td>
 
           </tr>
@@ -94,44 +94,44 @@
 
     <!-- Editing Employee -->
     <div v-if="editingEmployee">
-    <h2>Edit Employee</h2>
-    <fieldset>
-      <legend>Update Info</legend>
-    <fieldset>
-      <legend>Personal Info</legend>
-      <input v-model="editingEmployee.firstName" placeholder="First Name" />
-      <input v-model="editingEmployee.lastName" placeholder="Last Name" />
-      <input v-model="editingEmployee.dob" placeholder="Date of Birth (YYYY-MM-DD)" />
-      <input v-model="editingEmployee.gender" placeholder="Gender" />
-      <input v-model="editingEmployee.identifiedRace" placeholder="Identified Race" />
-  
-      <input v-model="editingEmployee.ssn" placeholder="SSN" />
-    </fieldset>
+      <h2>Edit Employee</h2>
+      <fieldset>
+        <legend>Update Info</legend>
+        <fieldset>
+          <legend>Personal Info</legend>
+          <input v-model="editingEmployee.firstName" placeholder="First Name" />
+          <input v-model="editingEmployee.lastName" placeholder="Last Name" />
+          <input v-model="editingEmployee.dob" placeholder="Date of Birth (YYYY-MM-DD)" />
+          <input v-model="editingEmployee.gender" placeholder="Gender" />
+          <input v-model="editingEmployee.identifiedRace" placeholder="Identified Race" />
 
-    <fieldset>
-      <legend>Contact Info</legend>
-      <input v-model="editingEmployee.email" placeholder="Email" />
-      <input v-model="editingEmployee.phone" placeholder="Phone" />
-    </fieldset>
+          <input v-model="editingEmployee.ssn" placeholder="SSN" />
+        </fieldset>
 
-    <fieldset>
-      <legend>Job Info</legend>
-      <input v-model="editingEmployee.hireDate" placeholder="Hire Date (YYYY-MM-DD)" />
-      <input v-model="editingEmployee.salary" placeholder="Salary" />
-    </fieldset>
+        <fieldset>
+          <legend>Contact Info</legend>
+          <input v-model="editingEmployee.email" placeholder="Email" />
+          <input v-model="editingEmployee.phone" placeholder="Phone" />
+        </fieldset>
 
-    <fieldset>
-      <legend>Address Info</legend>
-      <input v-model="editingEmployee.address.street" placeholder="Street"/>
-      <input v-model="editingEmployee.address.cityName" placeholder="City"/>
-      <input v-model="editingEmployee.address.stateName" placeholder="State"/>
-      <input v-model="editingEmployee.address.zip" placeholder="Zipcode"/>
+        <fieldset>
+          <legend>Job Info</legend>
+          <input v-model="editingEmployee.hireDate" placeholder="Hire Date (YYYY-MM-DD)" />
+          <input v-model="editingEmployee.salary" placeholder="Salary" />
+        </fieldset>
 
-    </fieldset>
-      
-    </fieldset>
-    <button @click="submitEdit">Save Changes</button>
-    <button @click="cancelEdit">Cancel</button>
+        <fieldset>
+          <legend>Address Info</legend>
+          <input v-model="editingEmployee.address.street" placeholder="Street" />
+          <input v-model="editingEmployee.address.cityName" placeholder="City" />
+          <input v-model="editingEmployee.address.stateName" placeholder="State" />
+          <input v-model="editingEmployee.address.zip" placeholder="Zipcode" />
+
+        </fieldset>
+
+      </fieldset>
+      <button @click="submitEdit">Save Changes</button>
+      <button @click="cancelEdit">Cancel</button>
     </div>
 
     <h2> Salary Manager</h2>
@@ -165,12 +165,12 @@
           <td>{{ e.firstName }}</td>
           <td>{{ e.lastName }}</td>
           <td>{{ e.email }}</td>
-          <td>{{ e.hireDate }}</td>
+          <td>{{ formatDate(e.hireDate) }}</td>
           <td>{{ e.salary }}</td>
           <td>{{ e.ssn }}</td>
           <td>{{ e.gender }}</td>
           <td>{{ e.identifiedRace }}</td>
-          <td>{{ e.dob }}</td>
+          <td>{{ formatDate(e.dob) }}</td>
           <td>{{ e.phone }}</td>
           <td>{{ formatAddress(e.address) }}</td>
           <td>
@@ -185,7 +185,7 @@
 
   <button @click="goToPayHistory">View Pay History</button>
 
-  
+
 </template>
 
 
@@ -193,14 +193,14 @@
 <script setup>
 
 
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, reactive } from 'vue'
 import axios from 'axios'
 import { useRouter } from 'vue-router'
 import SalaryManager from '../components/SalaryManager.vue'
 
 const router = useRouter()
 
-const authAxios = axios.create({withCredentials: true})
+const authAxios = axios.create({ withCredentials: true })
 
 axios.defaults.withCredentials = true
 
@@ -219,7 +219,7 @@ const form = ref({
   address: {
     street: '',
     zip: '',
-    cityName : '',
+    cityName: '',
     stateName: ''
   }
 })
@@ -245,6 +245,11 @@ const search = ref({
   empid: ''
 })
 
+const formatDate = (dateStr) => {
+  if (!dateStr) return '';
+  return new Date(dateStr).toLocaleDateString();
+}
+
 // Fetch all employees
 const fetchEmployees = async () => {
   try {
@@ -258,9 +263,46 @@ const fetchEmployees = async () => {
 // Add new employee
 const addEmployee = async () => {
   try {
+    // Validate required fields
+    if (!form.value.firstName || !form.value.lastName || !form.value.dob ||
+      !form.value.gender || !form.value.identifiedRace || !form.value.ssn ||
+      !form.value.email || !form.value.phone || !form.value.hireDate ||
+      !form.value.salary || !form.value.address.street || !form.value.address.cityName ||
+      !form.value.address.stateName || !form.value.address.zip) {
+      alert('Please fill in all required fields');
+      return;
+    }
+
+    // Validate date formats
+    const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
+    if (!dateRegex.test(form.value.dob) || !dateRegex.test(form.value.hireDate)) {
+      alert('Please enter dates in YYYY-MM-DD format');
+      return;
+    }
+
+    // Validate salary is a number
+    if (isNaN(form.value.salary) || form.value.salary <= 0) {
+      alert('Please enter a valid salary amount');
+      return;
+    }
+
+    // Validate SSN format (XXX-XX-XXXX)
+    const ssnRegex = /^\d{3}-\d{2}-\d{4}$/;
+    if (!ssnRegex.test(form.value.ssn)) {
+      alert('Please enter SSN in XXX-XX-XXXX format');
+      return;
+    }
+
+    // Validate phone number format (XXX-XXX-XXXX)
+    const phoneRegex = /^\d{3}-\d{3}-\d{4}$/;
+    if (!phoneRegex.test(form.value.phone)) {
+      alert('Please enter phone number in XXX-XXX-XXXX format');
+      return;
+    }
+
     await authAxios.post('/api/admin', form.value)
     await fetchEmployees()
-    
+
     // Clears form
     form.value = {
       firstName: '',
@@ -272,10 +314,17 @@ const addEmployee = async () => {
       email: '',
       phone: '',
       hireDate: '',
-      salary: ''
+      salary: '',
+      address: {
+        street: '',
+        zip: '',
+        cityName: '',
+        stateName: ''
+      }
     }
   } catch (err) {
     console.error('Add error:', err)
+    alert('Error adding employee: ' + (err.response?.data || err.message))
   }
 }
 
@@ -325,8 +374,19 @@ const clearSearch = () => {
 const editingEmployee = ref(null)
 
 const startEdit = (employee) => {
-  editingEmployee.value = { ...employee } // Clone the object to edit
+  console.log("Starting edit for: ", employee)
+  editingEmployee.value = {
+    ...employee,
+    address: {
+      street: '',
+      cityName: '',
+      stateName: '',
+      zip: '',
+      ...employee.address // merge in actual values if they exist
+    }
+  }
 }
+
 
 const cancelEdit = () => {
   editingEmployee.value = null
@@ -350,13 +410,13 @@ const goToPayHistory = () => {
 
 onMounted(() => {
   axios.get('api/auth/verify')
-  .then(()=> {
-    const role = localStorage.getItem('role')
-    if (!role || role!== 'ADMIN'){
-      router.push('/')
-      return
-    }
-  })
+    .then(() => {
+      const role = localStorage.getItem('role')
+      if (!role || role !== 'ADMIN') {
+        router.push('/')
+        return
+      }
+    })
   // Fetch employees when the page loads
   fetchEmployees()
 })
@@ -367,27 +427,33 @@ input {
   margin: 0.5rem;
   padding: 0.5rem;
 }
+
 button {
   margin: 0.5rem;
   padding: 0.5rem 1rem;
   font-weight: bold;
 }
+
 fieldset {
   margin: 1rem 0;
   padding: 1rem;
   border: 1px solid #ccc;
   border-radius: 8px;
 }
+
 legend {
   font-weight: bold;
   padding: 0 0.5rem;
 }
+
 table {
   margin-top: 1rem;
   width: 100%;
   border-collapse: collapse;
 }
-th, td {
+
+th,
+td {
   padding: 0.5rem;
   border: 1px solid #ccc;
   text-align: left;
