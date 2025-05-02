@@ -10,7 +10,6 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToOne;
 
 @Entity
 public class Employees {
@@ -41,12 +40,6 @@ public class Employees {
     @ManyToOne
     @JoinColumn(name = "address_id")
     public Address address;
-
-    @OneToOne(mappedBy = "employee")
-    private EmployeeJobTitle employeeJobTitle;
-
-    @OneToOne(mappedBy = "employee")
-    private EmployeeDivision employeeDivision;
 
     @Column(name = "gender")
     private String gender;

@@ -41,7 +41,7 @@ public interface PayrollRepo extends JpaRepository<Payroll, Long> {
            "SUM(p.earnings) as earnings " +
            "FROM Payroll p " +
            "JOIN p.employee e " +
-           "JOIN e.employeeJobTitle ejt " +
+           "JOIN EmployeeJobTitle ejt ON ejt.empId = e.empid " +
            "JOIN ejt.jobTitle jt " +
            "WHERE p.payDate BETWEEN :startDate AND :endDate " +
            "GROUP BY jt.title")
@@ -55,7 +55,7 @@ public interface PayrollRepo extends JpaRepository<Payroll, Long> {
            "SUM(p.earnings) as earnings " +
            "FROM Payroll p " +
            "JOIN p.employee e " +
-           "JOIN e.employeeDivision ed " +
+           "JOIN EmployeeDivision ed ON ed.empId = e.empid " +
            "JOIN ed.division d " +
            "WHERE p.payDate BETWEEN :startDate AND :endDate " +
            "GROUP BY d.name")
