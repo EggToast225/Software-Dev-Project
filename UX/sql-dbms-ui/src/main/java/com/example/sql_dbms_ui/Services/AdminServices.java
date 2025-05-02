@@ -237,7 +237,7 @@ public class AdminServices implements AdminInterface{
     }
 
     public List<Payroll> findAllByOrderByEmployeeEmpidAscPayDateAsc(){
-        return payrollRepo.findAllByOrderByEmployee_EmpidAscPayDateAsc();
+        return payrollRepo.findAllByOrderByEmployeeEmpidAscPayDateAsc();
     }
 
     public List<Payroll> findByEmployeeEmpidOrderByPayDateAsc(Long empid){
