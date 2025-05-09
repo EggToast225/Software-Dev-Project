@@ -1,59 +1,66 @@
 package com.example.sql_dbms_ui.Controllers;
 
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.sql_dbms_ui.Models.Employees;
+import com.example.sql_dbms_ui.Models.Payroll;
 import com.example.sql_dbms_ui.repo.EmployeesRepo;
-
+import com.example.sql_dbms_ui.repo.PayrollRepo;
 
 @RestController
-@RequestMapping(value = "/Employees")
-public class EmployeeController{
+@RequestMapping("/api/employee")
+public class EmployeeController {
+    private final EmployeesRepo employeesRepository;
+    private final PayrollRepo payrollRepository;
 
-    @Autowired // Handles dependency injection
-    private EmployeesRepo employeeRepo;
-
-
-    //@PostMapping used because we want to save to database; saves new employee
-    @PostMapping(value = "/save") 
-    public ResponseEntity<String> saveEmployees(@RequestBody List<Employees> employees) {
-        employeeRepo.saveAll(employees);
-        return ResponseEntity.ok("saved");
+    public EmployeeController(EmployeesRepo employeesRepository, PayrollRepo payrollRepository) {
+        this.employeesRepository = employeesRepository;
+        this.payrollRepository = payrollRepository;
     }
 
-    //Get all employees
-    @GetMapping(value = "/all")
-    public List<Employees> getEmployees(){
-        return employeeRepo.findAll();
+    @GetMapping("/details")
+    public ResponseEntity<?> getEmployeeDetails(@RequestParam String email) {
+        Optional<Employees> employeeOpt = employeesRepository.findByEmail(email);
+        if (employeeOpt.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+
+        Employees employee = employeeOpt.get();
+        return ResponseEntity.ok(employee);
     }
 
-    //Updates the User by their primary key/id, handles HTTP Put request
-    @PutMapping(value ="/update/{empid}") 
-    public String updateEmployee(@PathVariable("empid") long EmpID, @RequestBody Employees employee){
-        Employees updatedEmployee = employeeRepo.findById(EmpID).get();
-        updatedEmployee.setFirstName(employee.getFirstName());
-        updatedEmployee.setLastName(employee.getLastName());
-        updatedEmployee.setEmail(employee.getEmail());
+    @GetMapping("/payroll")
+    public ResponseEntity<?> getEmployeePayroll(@RequestParam String email) {
+        Optional<Employees> employeeOpt = employeesRepository.findByEmail(email);
+        if (employeeOpt.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
 
-        employeeRepo.save(updatedEmployee);
-        return "updated";
+        List<Payroll> payrollRecords = payrollRepository.findByEmployeeEmpid(employeeOpt.get().getEmpid());
+        return ResponseEntity.ok(payrollRecords);
     }
 
-    @DeleteMapping(value = "/delete/{id}") // Handles HTTP Delete request
-    public String deleteEmployee(@PathVariable("id") long EmpID, @RequestBody Employees employee){
-        Employees deleteUser = employeeRepo.findById(EmpID).get();
-        employeeRepo.delete(deleteUser);
-        return "deleted user with id: " + EmpID;
+    @GetMapping("/job-title")
+    public ResponseEntity<?> getEmployeeJobTitle(@RequestParam String email) {
+        Optional<Employees> employeeOpt = employeesRepository.findByEmail(email);
+        if (employeeOpt.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+
+        // Get the employee's current job title using a native query
+        String jobTitle = employeesRepository.findCurrentJobTitleByEmployeeId(employeeOpt.get().getEmpid());
+        if (jobTitle == null) {
+            return ResponseEntity.notFound().build();
+        }
+
+        return ResponseEntity.ok(Map.of("title", jobTitle));
     }
 }

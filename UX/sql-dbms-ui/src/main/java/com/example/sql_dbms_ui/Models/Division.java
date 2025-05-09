@@ -1,14 +1,16 @@
 // Division.java (Updated to match DB schema)
 package com.example.sql_dbms_ui.Models;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
 
 @Entity
 public class Division {
 
     @Id
     @Column(name = "ID")
-    private int id;
+    private Long id;
 
     @Column(name = "Name")
     private String name;
@@ -32,11 +34,11 @@ public class Division {
     private String postalCode;
 
     // Getters and setters
-    public int getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(Long id) {
         this.id = id;
     }
 

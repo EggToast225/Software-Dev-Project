@@ -1,15 +1,23 @@
 // Employees.java (Updated to match DB schema)
 package com.example.sql_dbms_ui.Models;
 
-import jakarta.persistence.*;
-import java.util.Date;
+import java.sql.Date;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 
 @Entity
 public class Employees {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "empid")
-    private int empid;
+    private Long empid;
 
     @Column(name = "Fname")
     private String firstName;
@@ -31,7 +39,7 @@ public class Employees {
 
     @ManyToOne
     @JoinColumn(name = "address_id")
-    private Address address;
+    public Address address;
 
     @Column(name = "gender")
     private String gender;
@@ -45,12 +53,31 @@ public class Employees {
     @Column(name = "phone")
     private String phone;
 
+
+
+
+    // Constructor for object
+    public Employees(){}
+
+    public Employees(String firstName, String lastName, String email, Date hireDate, double salary, String ssn, String gender, String identifiedRace, Date dob, String phone){
+        this.firstName=firstName;
+        this.lastName=lastName;
+        this.email =  email;
+        this.hireDate = hireDate;
+        this.salary = salary;
+        this.ssn = ssn;
+        this.gender = gender;
+        this.identifiedRace = identifiedRace;
+        this.dob = dob;
+        this.phone = phone;
+    }
+
     // Getters and setters
-    public int getEmpid() {
+    public Long getEmpid() {
         return empid;
     }
 
-    public void setEmpid(int empid) {
+    public void setEmpid(Long empid) {
         this.empid = empid;
     }
 

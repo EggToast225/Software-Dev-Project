@@ -1,24 +1,26 @@
 // JobTitle.java (Updated to match DB schema)
 package com.example.sql_dbms_ui.Models;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
 
 @Entity
 public class JobTitle {
 
     @Id
     @Column(name = "job_title_id")
-    private int jobTitleId;
+    private Long jobTitleId;
 
     @Column(name = "job_title")
     private String title;
 
     // Getters and setters
-    public int getJobTitleId() {
+    public Long getJobTitleId() {
         return jobTitleId;
     }
 
-    public void setJobTitleId(int jobTitleId) {
+    public void setJobTitleId(Long jobTitleId) {
         this.jobTitleId = jobTitleId;
     }
 
