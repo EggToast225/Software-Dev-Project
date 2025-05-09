@@ -5,18 +5,22 @@ import AuthenticationView from '../views/AuthenticationView.vue'
 import PayrollView from '../views/PayrollView.vue'
 
 const routes = [
-  { path: '/admin',
+  {
+    path: '/admin',
     component: AdminView,
-    meta: {requiresRole: "ADMIN"}
+    meta: { requiresRole: "ADMIN" }
   },
-  { path: '/employee',
+  {
+    path: '/employee',
     component: EmployeeView,
-    meta: {requiresRole: 'EMPLOYEE'}
+    meta: { requiresRole: 'EMPLOYEE' }
   },
   { path: '/', component: AuthenticationView },
 
-  { path: '/pay-history',
-    component: PayrollView
+  {
+    path: '/pay-history',
+    component: PayrollView,
+    meta: { requiresAuth: true }
   }
 
 ]

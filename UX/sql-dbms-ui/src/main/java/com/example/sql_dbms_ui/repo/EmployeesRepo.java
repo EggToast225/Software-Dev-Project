@@ -1,8 +1,11 @@
 package com.example.sql_dbms_ui.repo;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import com.example.sql_dbms_ui.Models.Employees;
 
@@ -11,6 +14,7 @@ import com.example.sql_dbms_ui.Models.Employees;
 
 
 public interface EmployeesRepo extends JpaRepository<Employees, Long>{
+    Optional<Employees> findByEmail(String email);
     
     // Custom Queries
     /*  There a cool thing that JPA does that makes this work.
@@ -25,33 +29,10 @@ public interface EmployeesRepo extends JpaRepository<Employees, Long>{
         WHERE e.salary BETWEEN min AND max
     */
     List<Employees> findBySalaryBetween(double min, double max);
-    
-    
-    /*
-    No longer needed Queries after implementing Example matcher
 
-    // Custom Queries
-    Optional<Employees> findBySsn(String ssn);
-    Optional<Employees> findByDob(Date dob);
-    Optional<Employees> findByEmail(String email);
-
-    Optional<Employees> findByFirstName(String firstName);
-    Optional<Employees> findByLastName(String lastName);
-
-    
-    // Query for searching up an employee with name, ssn, dob, and id
-    @Query("SELECT e FROM Employees e " +
-            "WHERE (:name IS NULL OR CONCAT(e.firstName, ' ', e.lastName) LIKE %:name%) " +
-            "AND (:ssn IS NULL OR e.ssn LIKE %:ssn%) " +
-            "AND (:dob IS NULL OR e.dob = :dob) " +
-            "AND (:empid IS NULL OR e.empid = :empid)")
-
-    List<Employees> searchEmployees(
-        @Param("firstName") String firstName,
-        @Param("lastName") String lastName,
-        @Param("dob") Date dob,
-        @Param("ssn") String ssn,
-        @Param("empid") Long empid
-    );
-*/
-    }
+    @Query(value = "SELECT jt.title FROM job_title jt " +
+                  "JOIN employee_job_title ejt ON jt.job_title_id = ejt.job_title_id " +
+                  "WHERE ejt.empid = :employeeId ",
+           nativeQuery = true)
+    String findCurrentJobTitleByEmployeeId(@Param("employeeId") Long employeeId);
+}

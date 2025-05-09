@@ -2,39 +2,49 @@
   <div>
     <h1>Admin Dashboard</h1>
 
-    <!-- Add New Employee -->
-    <h2>Add New Employee</h2>
-    <fieldset>
-      <legend>Personal Info</legend>
-      <input v-model="form.firstName" placeholder="First Name" />
-      <input v-model="form.lastName" placeholder="Last Name" />
-      <input v-model="form.dob" placeholder="Date of Birth (YYYY-MM-DD)" />
-      <input v-model="form.gender" placeholder="Gender" />
-      <input v-model="form.identifiedRace" placeholder="Identified Race" />
-      <input v-model="form.ssn" placeholder="SSN" />
-    </fieldset>
+    <!-- Add New Employee Button -->
+    <button @click="showAddForm = !showAddForm">
+      {{ showAddForm ? 'Cancel Adding Employee' : 'Add New Employee' }}
+    </button>
 
-    <fieldset>
-      <legend>Contact Info</legend>
-      <input v-model="form.email" placeholder="Email" />
-      <input v-model="form.phone" placeholder="Phone" />
-    </fieldset>
+    <!-- Add New Employee Form -->
+    <div v-if="showAddForm">
+      <h2>Add New Employee</h2>
+      <fieldset>
+        <legend>Personal Info</legend>
+        <input v-model="form.firstName" placeholder="First Name" />
+        <input v-model="form.lastName" placeholder="Last Name" />
+        <input v-model="form.dob" placeholder="Date of Birth (YYYY-MM-DD)" />
+        <input v-model="form.gender" placeholder="Gender" />
+        <input v-model="form.identifiedRace" placeholder="Identified Race" />
+        <input v-model="form.ssn" placeholder="SSN" />
+      </fieldset>
 
-    <fieldset>
-      <legend>Job Info</legend>
-      <input v-model="form.hireDate" placeholder="Hire Date (YYYY-MM-DD)" />
-      <input v-model="form.salary" placeholder="Salary" />
-    </fieldset>
+      <fieldset>
+        <legend>Contact Info</legend>
+        <input v-model="form.email" placeholder="Email" />
+        <input v-model="form.phone" placeholder="Phone" />
+      </fieldset>
 
-    <fieldset>
-      <legend>Address Info</legend>
-      <input v-model="form.address.street" placeholder="Street" />
-      <input v-model="form.address.cityName" placeholder="City" />
-      <input v-model="form.address.stateName" placeholder="State" />
-      <input v-model="form.address.zip" placeholder="ZIP Code" />
-    </fieldset>
+      <fieldset>
+        <legend>Job Info</legend>
+        <input v-model="form.hireDate" placeholder="Hire Date (YYYY-MM-DD)" />
+        <input v-model="form.salary" placeholder="Salary" />
+      </fieldset>
 
-    <button @click="addEmployee">Add Employee</button>
+      <fieldset>
+        <legend>Address Info</legend>
+        <input v-model="form.address.street" placeholder="Street" />
+        <input v-model="form.address.cityName" placeholder="City" />
+        <input v-model="form.address.stateName" placeholder="State" />
+        <input v-model="form.address.zip" placeholder="ZIP Code" />
+      </fieldset>
+
+      <div>
+        <button @click="addEmployee">Confirm Add Employee</button>
+        <button @click="showAddForm = false">Cancel</button>
+      </div>
+    </div>
 
     <!-- Search Section -->
     <h2>Search Employees</h2>
@@ -75,7 +85,7 @@
             <td>{{ e.lastName }}</td>
             <td>{{ e.email }}</td>
             <td>{{ formatDate(e.hireDate) }}</td>
-            <td>{{ e.salary }}</td>
+            <td>{{ formatCurrency(e.salary) }}</td>
             <td>{{ e.ssn }}</td>
             <td>{{ e.gender }}</td>
             <td>{{ e.identifiedRace }}</td>
@@ -123,8 +133,8 @@
         <fieldset>
           <legend>Address Info</legend>
           <input v-model="editingEmployee.address.street" placeholder="Street" />
-          <input v-model="editingEmployee.address.cityName" placeholder="City" />
-          <input v-model="editingEmployee.address.stateName" placeholder="State" />
+          <input v-model="editingEmployee.address.city.cityName" placeholder="City" />
+          <input v-model="editingEmployee.address.state.stateName" placeholder="State" />
           <input v-model="editingEmployee.address.zip" placeholder="Zipcode" />
 
         </fieldset>
@@ -135,7 +145,7 @@
     </div>
 
     <h2> Salary Manager</h2>
-    <SalaryManager>
+    <SalaryManager @updated="fetchEmployees">
     </SalaryManager>
 
 
@@ -166,7 +176,7 @@
           <td>{{ e.lastName }}</td>
           <td>{{ e.email }}</td>
           <td>{{ formatDate(e.hireDate) }}</td>
-          <td>{{ e.salary }}</td>
+          <td>{{ formatCurrency(e.salary) }}</td>
           <td>{{ e.ssn }}</td>
           <td>{{ e.gender }}</td>
           <td>{{ e.identifiedRace }}</td>
@@ -203,6 +213,8 @@ const router = useRouter()
 const authAxios = axios.create({ withCredentials: true })
 
 axios.defaults.withCredentials = true
+
+const showAddForm = ref(false)
 
 // Employee form
 const form = ref({
@@ -250,6 +262,16 @@ const search = ref({
 const formatDate = (dateStr) => {
   if (!dateStr) return '';
   return new Date(dateStr).toLocaleDateString();
+}
+
+const formatCurrency = (amount) => {
+  if (amount === undefined || amount === null) return '';
+  return new Intl.NumberFormat('en-US', {
+    style: 'currency',
+    currency: 'USD',
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2
+  }).format(amount);
 }
 
 // Fetch all employees
@@ -380,11 +402,17 @@ const startEdit = (employee) => {
   editingEmployee.value = {
     ...employee,
     address: {
-      street: '',
-      cityName: '',
-      stateName: '',
-      zip: '',
-      ...employee.address // merge in actual values if they exist
+      addressId: employee.address?.addressId ?? '',
+      street: employee.address?.street ?? '',
+      zip: employee.address?.zip ?? '',
+      city: {
+        cityId: employee.address?.city?.cityId ?? '',
+        cityName: employee.address?.city?.cityName ?? ''
+      },
+      state: {
+        stateId: employee.address?.state?.stateId ?? '',
+        stateName: employee.address?.state?.stateName ?? ''
+      }
     }
   }
 }
@@ -397,12 +425,51 @@ const cancelEdit = () => {
 const submitEdit = async () => {
   try {
     const id = editingEmployee.value.empid
-    const response = await axios.patch(`/api/admin/${id}`, editingEmployee.value)
+    // Create a properly structured employee object
+    const employeeData = {
+      empid: id,
+      firstName: editingEmployee.value.firstName,
+      lastName: editingEmployee.value.lastName,
+      email: editingEmployee.value.email,
+      hireDate: editingEmployee.value.hireDate,
+      salary: editingEmployee.value.salary,
+      ssn: editingEmployee.value.ssn,
+      gender: editingEmployee.value.gender,
+      identifiedRace: editingEmployee.value.identifiedRace,
+      dob: editingEmployee.value.dob,
+      phone: editingEmployee.value.phone,
+      address: {
+        addressId: editingEmployee.value.address.addressId,
+        street: editingEmployee.value.address.street,
+        zip: editingEmployee.value.address.zip,
+        city: {
+          cityId: editingEmployee.value.address.city.cityId,
+          cityName: editingEmployee.value.address.city.cityName
+        },
+        state: {
+          stateId: editingEmployee.value.address.state.stateId,
+          stateName: editingEmployee.value.address.state.stateName
+        }
+      }
+    }
+    
+    // Update the employee
+    const response = await axios.patch(`/api/admin/${id}`, employeeData, {
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    })
     console.log('Employee updated:', response.data)
     editingEmployee.value = null
-    fetchEmployees() // Refresh the list
+    // Immediately refresh the employee list
+    await fetchEmployees()
+    // Also refresh the filtered list if it's being shown
+    if (showSearchResults.value) {
+      await searchEmployees()
+    }
   } catch (err) {
     console.error('Update failed:', err)
+    alert('Failed to update employee: ' + (err.response?.data || err.message))
   }
 }
 

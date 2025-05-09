@@ -1,33 +1,66 @@
 package com.example.sql_dbms_ui.Controllers;
 
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.example.sql_dbms_ui.Services.EmployeeServices;
-
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestParam;
-
 import com.example.sql_dbms_ui.Models.Employees;
-
+import com.example.sql_dbms_ui.Models.Payroll;
+import com.example.sql_dbms_ui.repo.EmployeesRepo;
+import com.example.sql_dbms_ui.repo.PayrollRepo;
 
 @RestController
 @RequestMapping("/api/employee")
 public class EmployeeController {
-    public final EmployeeServices employeeServices;
+    private final EmployeesRepo employeesRepository;
+    private final PayrollRepo payrollRepository;
 
-    EmployeeController(EmployeeServices employeeServices){
-        this.employeeServices = employeeServices;
+    public EmployeeController(EmployeesRepo employeesRepository, PayrollRepo payrollRepository) {
+        this.employeesRepository = employeesRepository;
+        this.payrollRepository = payrollRepository;
     }
 
-    @GetMapping("{id}")
-    public Employees getEmployeeInfo(@PathVariable("id") Long id) {
-        return  employeeServices.getEmployeeById(id);
+    @GetMapping("/details")
+    public ResponseEntity<?> getEmployeeDetails(@RequestParam String email) {
+        Optional<Employees> employeeOpt = employeesRepository.findByEmail(email);
+        if (employeeOpt.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+
+        Employees employee = employeeOpt.get();
+        return ResponseEntity.ok(employee);
     }
 
-    
-    
+    @GetMapping("/payroll")
+    public ResponseEntity<?> getEmployeePayroll(@RequestParam String email) {
+        Optional<Employees> employeeOpt = employeesRepository.findByEmail(email);
+        if (employeeOpt.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+
+        List<Payroll> payrollRecords = payrollRepository.findByEmployeeEmpid(employeeOpt.get().getEmpid());
+        return ResponseEntity.ok(payrollRecords);
+    }
+
+    @GetMapping("/job-title")
+    public ResponseEntity<?> getEmployeeJobTitle(@RequestParam String email) {
+        Optional<Employees> employeeOpt = employeesRepository.findByEmail(email);
+        if (employeeOpt.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+
+        // Get the employee's current job title using a native query
+        String jobTitle = employeesRepository.findCurrentJobTitleByEmployeeId(employeeOpt.get().getEmpid());
+        if (jobTitle == null) {
+            return ResponseEntity.notFound().build();
+        }
+
+        return ResponseEntity.ok(Map.of("title", jobTitle));
+    }
 }

@@ -11,7 +11,7 @@
                 <tr>
                 <th>ID</th>
                 <th>Name</th>
-                <th>Salary</th>
+                <th>Current Salary</th>
                 <th>Adjusted Salary</th>
                 </tr>
             </thead>
@@ -19,17 +19,19 @@
                 <tr v-for="e in result" :key="e.empid">
                 <td>{{ e.empid }}</td>
                 <td>{{ e.firstName }} {{ e.lastName }}</td>
-                <td>{{ e.salary }}</td>
+                <td>{{ formatCurrency(e.salary) }}</td>
                 <td>{{ adjustedSalary(e.salary) }}</td>
                 </tr>
             </tbody>
-            </table>
+        </table>
     </div>
 </template>
 
 <script setup>
 import { ref } from 'vue'
 import axios from 'axios'
+
+const emit = defineEmits(['updated'])
 
 const min = ref('')
 const max = ref('')
@@ -52,10 +54,25 @@ const update = async () => {
         }
     })
     result.value = []
+    emit('updated')
 }
 
 const adjustedSalary = (salary) => {
-    return (salary * (1 + parseFloat(percent.value) / 100)).toFixed(2)
+    return new Intl.NumberFormat('en-US', {
+        style: 'currency',
+        currency: 'USD',
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+    }).format(salary * (1 + parseFloat(percent.value) / 100))
+}
+
+const formatCurrency = (amount) => {
+    return new Intl.NumberFormat('en-US', {
+        style: 'currency',
+        currency: 'USD',
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+    }).format(amount)
 }
 </script>
 

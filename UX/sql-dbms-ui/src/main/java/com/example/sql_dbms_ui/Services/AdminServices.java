@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 import com.example.sql_dbms_ui.Models.Address;
 import com.example.sql_dbms_ui.Models.City;
+import com.example.sql_dbms_ui.Models.Division;
 import com.example.sql_dbms_ui.Models.Employees;
 import com.example.sql_dbms_ui.Models.Payroll;
 import com.example.sql_dbms_ui.Models.State;
@@ -19,6 +20,7 @@ import com.example.sql_dbms_ui.Services.DTO.EmployeeDTO;
 import com.example.sql_dbms_ui.Services.Interfaces.AdminInterface;
 import com.example.sql_dbms_ui.repo.AddressRepo;
 import com.example.sql_dbms_ui.repo.CityRepo;
+import com.example.sql_dbms_ui.repo.DivisionRepo;
 import com.example.sql_dbms_ui.repo.EmployeesRepo;
 import com.example.sql_dbms_ui.repo.PayrollRepo;
 import com.example.sql_dbms_ui.repo.StateRepo;
@@ -35,13 +37,15 @@ public class AdminServices implements AdminInterface{
     private final CityRepo      cityRepo;
     private final StateRepo     stateRepo;
     private final AddressRepo   addressRepo;
+    private final DivisionRepo  divisionRepo;
 
-    public AdminServices(EmployeesRepo employeesRepo, PayrollRepo payrollRepo, CityRepo cityRepo, StateRepo stateRepo, AddressRepo addressRepo){
+    public AdminServices(EmployeesRepo employeesRepo, PayrollRepo payrollRepo, CityRepo cityRepo, StateRepo stateRepo, AddressRepo addressRepo, DivisionRepo divisionRepo){
         this.employeesRepo  = employeesRepo;
         this.payrollRepo    = payrollRepo;
         this.cityRepo       = cityRepo;
         this.stateRepo      = stateRepo;
         this.addressRepo    = addressRepo;
+        this.divisionRepo   = divisionRepo;
     }
 
     
@@ -205,10 +209,9 @@ public class AdminServices implements AdminInterface{
 
         List<Map<String, Object>> results = payrollRepo.findTotalMonthlyEarningsByJobTitle(startDate, endDate);
         
-        // Include all job titles, even those with null or zero earnings
         return results.stream()
             .collect(Collectors.toMap(
-                result -> (String) result.get("jobTitle"),
+                result -> (String) result.get("title"),
                 result -> result.get("earnings") != null ? ((Number)result.get("earnings")).doubleValue() : 0.0
             ));
     }
@@ -236,6 +239,45 @@ public class AdminServices implements AdminInterface{
             ));
     }
 
+    public Map<String,Double> getTotalYearlyEarningsByJobTitle(int year) {
+        Calendar cal = Calendar.getInstance();
+        // Set to January 1st of the year
+        cal.set(year, 0, 1, 0, 0, 0);
+        Date startDate = cal.getTime();
+        
+        // Set to December 31st of the year
+        cal.set(year, 11, 31, 23, 59, 59);
+        Date endDate = cal.getTime();
+
+        List<Map<String, Object>> results = payrollRepo.findTotalMonthlyEarningsByJobTitle(startDate, endDate);
+        
+        return results.stream()
+            .collect(Collectors.toMap(
+                result -> (String) result.get("jobTitle"),
+                result -> result.get("earnings") != null ? ((Number)result.get("earnings")).doubleValue() : 0.0
+            ));
+    }
+
+    public Map<String,Double> getTotalYearlyEarningsByDivision(int year) {
+        Calendar cal = Calendar.getInstance();
+        // Set to January 1st of the year
+        cal.set(year, 0, 1, 0, 0, 0);
+        Date startDate = cal.getTime();
+        
+        // Set to December 31st of the year
+        cal.set(year, 11, 31, 23, 59, 59);
+        Date endDate = cal.getTime();
+
+        List<Map<String, Object>> results = payrollRepo.findTotalMonthlyEarningsByDivision(startDate, endDate);
+        
+        return results.stream()
+            .filter(result -> result.get("earnings") != null && ((Number)result.get("earnings")).doubleValue() > 0)
+            .collect(Collectors.toMap(
+                result -> (String) result.get("division"),
+                result -> ((Number) result.get("earnings")).doubleValue()
+            ));
+    }
+
     public List<Payroll> findAllByOrderByEmployeeEmpidAscPayDateAsc(){
         return payrollRepo.findAllByOrderByEmployeeEmpidAscPayDateAsc();
     }
@@ -246,5 +288,16 @@ public class AdminServices implements AdminInterface{
 
     public List<Payroll> findByEmployeeEmpidOrderByPayDateDesc(Long empid){
         return payrollRepo.findByEmployeeEmpidOrderByPayDateDesc(empid);
+    }
+
+    public List<Map<String, Object>> findTotalMonthlyEarningsByJobTitle(Date startDate, Date endDate) {
+        // Implementation here
+        return null; // Placeholder return, actual implementation needed
+    }
+
+    public List<String> getAllDivisions() {
+        return divisionRepo.findAll().stream()
+            .map(Division::getName)
+            .collect(Collectors.toList());
     }
 }

@@ -156,6 +156,30 @@ public class AdminController{
         }
     }
 
+    @GetMapping("/job-titles/yearly-net-pay")
+    public ResponseEntity<?> getYearlyNetPayByJobTitle(@RequestParam int year) {
+        try {
+            Map<String, Double> results = adminServices.getTotalYearlyEarningsByJobTitle(year);
+            List<Map<String, Object>> formattedResults = results.entrySet().stream()
+                .map(entry -> {
+                    Map<String, Object> result = new HashMap<>();
+                    result.put("jobTitle", entry.getKey());
+                    result.put("earnings", entry.getValue());
+                    // Create date with January 1st of the year
+                    Calendar cal = Calendar.getInstance();
+                    cal.set(year, 0, 1);
+                    result.put("payDate", new java.sql.Date(cal.getTimeInMillis()));
+                    return result;
+                })
+                .collect(Collectors.toList());
+            return ResponseEntity.ok(formattedResults);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body("Error retrieving yearly job title payroll: " + e.getMessage());
+        }
+    }
+
     @GetMapping("/division/monthly-net-pay")
     public ResponseEntity<?> getMonthlyNetPayByDivision(@RequestParam int year, @RequestParam int month) {
         try {
@@ -176,6 +200,29 @@ public class AdminController{
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body("Error retrieving division payroll: " + e.getMessage());
+        }
+    }
+
+    @GetMapping("/division/yearly-net-pay")
+    public ResponseEntity<?> getYearlyNetPayByDivision(@RequestParam int year) {
+        try {
+            Map<String, Double> results = adminServices.getTotalYearlyEarningsByDivision(year);
+            List<Map<String, Object>> formattedResults = results.entrySet().stream()
+                .map(entry -> {
+                    Map<String, Object> result = new HashMap<>();
+                    result.put("division", entry.getKey());
+                    result.put("earnings", entry.getValue());
+                    // Create date with January 1st of the year
+                    Calendar cal = Calendar.getInstance();
+                    cal.set(year, 0, 1);
+                    result.put("payDate", new java.sql.Date(cal.getTimeInMillis()));
+                    return result;
+                })
+                .collect(Collectors.toList());
+            return ResponseEntity.ok(formattedResults);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body("Error retrieving yearly division payroll: " + e.getMessage());
         }
     }
 
@@ -230,6 +277,18 @@ public class AdminController{
             e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body("Error testing payroll query: " + e.getMessage());
+        }
+    }
+
+    @GetMapping("/divisions")
+    public ResponseEntity<?> getAllDivisions() {
+        try {
+            List<String> divisions = adminServices.getAllDivisions();
+            return ResponseEntity.ok(divisions);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body("Error retrieving divisions: " + e.getMessage());
         }
     }
 

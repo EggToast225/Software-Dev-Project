@@ -1,6 +1,5 @@
 package com.example.sql_dbms_ui.config;
 
-
 import java.util.List;
 
 import org.springframework.context.annotation.Bean;
@@ -18,7 +17,6 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
-
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
@@ -28,19 +26,7 @@ public class SecurityConfig {
             .cors(cors -> cors.configurationSource(corsConfigurationSource()))
             .csrf(csrf -> csrf.disable())
             .authorizeHttpRequests(auth -> auth
-            .anyRequest().permitAll()
-                /*
-                .requestMatchers("/api/admin/**").hasRole("ADMIN")       // Admin role are allowed to send request from api/admin/** 
-                .requestMatchers("/api/employee/**").hasRole("EMPLOYEE") // Employee roles are allowed to send requests from api/employee/** 
-                .requestMatchers("/api/auth/**").permitAll()                 // Login endpoint
-                
-                .anyRequest().authenticated()
-                */
-                /*
-                .formLogin(form -> form
-                .loginPage("/api/auth/login")
-                .permitAll()
-                */
+                .anyRequest().permitAll()
             )
             .logout(logout ->
                 logout.permitAll()
@@ -55,7 +41,7 @@ public class SecurityConfig {
         config.setAllowedOrigins(List.of("http://localhost:5173")); // frontend origin
         config.setAllowedMethods(List.of("*"));
         config.setAllowedHeaders(List.of("*"));
-        config.setAllowCredentials(true); // Important if using cookies or authorization headers
+        config.setAllowCredentials(true);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", config);
@@ -63,33 +49,24 @@ public class SecurityConfig {
     }
 
     @Bean
-    public UserDetailsService UserDetailsService(){
-        // create a  InMemoryManager for hardcoded credentials
+    public UserDetailsService userDetailsService() {
+        // Create a InMemoryUserDetailsManager for hardcoded credentials
         InMemoryUserDetailsManager manager = new InMemoryUserDetailsManager();
         
         // Create a user with Admin privileges
         manager.createUser(
             User.withUsername("admin")
-            .password("{noop}admin123") // {noop} means no password encoding, so it's just the string
+            .password("{noop}admin123") // {noop} means no password encoding
             .roles("ADMIN")
-            .build());
-        // Create a user with Employee privileges
-        manager.createUser(
-            User.withUsername("employee")
-            .password("{noop}employee123") // {noop} means no password encoding, so it's just the string
-            .roles("EMPLOYEE")
             .build());
             
         return manager;
     }
 
     @Bean
-    public AuthenticationManager authenticationManager(UserDetailsService userDetailsService){
-        
+    public AuthenticationManager authenticationManager(UserDetailsService userDetailsService) {
         DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
         authProvider.setUserDetailsService(userDetailsService);
-
         return new ProviderManager(authProvider);
-
     }
 }

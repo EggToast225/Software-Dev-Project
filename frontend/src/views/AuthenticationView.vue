@@ -30,9 +30,10 @@ const handleLogin = async () => {
       password: password.value,
     }).then(response => {
       const role = response.data.role
+      const email = username.value // Store the email (username is the email)
 
       localStorage.setItem('role', role)
-
+      localStorage.setItem('email', email)
       
       if (role === 'ADMIN') {router.push('/admin')}
       else if (role === 'EMPLOYEE') {router.push('/employee')}

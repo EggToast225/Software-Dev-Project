@@ -12,6 +12,8 @@ import org.springframework.data.repository.query.Param;
 import com.example.sql_dbms_ui.Models.Payroll;
 
 public interface PayrollRepo extends JpaRepository<Payroll, Long> {
+    
+    List<Payroll> findByEmployeeEmpid(Long employeeId);
 
     // Fetch all payrolls ordered by employee.empid and payDate
     List<Payroll> findAllByOrderByEmployeeEmpidAscPayDateAsc();
@@ -37,8 +39,7 @@ public interface PayrollRepo extends JpaRepository<Payroll, Long> {
     List<Payroll> findByPayDateBetween(Date startDate, Date endDate);
 
     // Total monthly net pay by job title using the date range method
-    @Query("SELECT jt.title, " +
-           "SUM(p.earnings) as earnings " +
+    @Query("SELECT jt.title as title, SUM(p.earnings) as earnings " +
            "FROM Payroll p " +
            "JOIN p.employee e " +
            "JOIN EmployeeJobTitle ejt ON ejt.empId = e.empid " +
@@ -51,8 +52,7 @@ public interface PayrollRepo extends JpaRepository<Payroll, Long> {
     );
 
     // Total monthly net pay by division
-    @Query("SELECT d.name as division, " +
-           "SUM(p.earnings) as earnings " +
+    @Query("SELECT d.name as division, SUM(p.earnings) as earnings " +
            "FROM Payroll p " +
            "JOIN p.employee e " +
            "JOIN EmployeeDivision ed ON ed.empId = e.empid " +
